@@ -1,0 +1,70 @@
+<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>test</title>
+</head>
+<body>
+<img id="image" src="" style="display: none;">
+<div><button onclick="handleClick()">TEST</button></div>
+<canvas id="source"></canvas>
+<canvas id="target"></canvas>
+</body>
+
+<script type="text/javascript">
+
+const image = document.getElementById('image');
+const canvasSrc = document.getElementById('source');
+const canvasTrg = document.getElementById('target');
+
+const onImgLoad = function() {
+	const w = image.width, h = image.height;
+
+	canvasSrc.width = w;
+	canvasSrc.height = h;
+	canvasTrg.width = w;
+	canvasTrg.height = h;
+
+	const ctx_s = canvasSrc.getContext('2d');
+	ctx_s.drawImage(image, 0, 0);
+	const ctx_t = canvasTrg.getContext('2d');
+
+	// Finally, get the image data
+	// ('data' is an array of RGBA pixel values for each pixel)
+	const data = ctx_s.getImageData(0, 0, w, h);
+	for (let i = 0; i < h/2; ++i) {
+		for (let j = 0; j < w/2; ++j) {
+			for (let k = 0; k < 3; ++k) {
+				data.data[i * 4 * w + 4*j + k] = 0;
+			}
+		}
+	}
+	ctx_t.drawImage(image, 0, 0)
+	ctx_t.putImageData(data, 0, 0)
+
+}
+
+const setSrc = (src) => image.src = src;
+image.onload = onImgLoad;
+
+const s1 = './imgs/detalj.png';
+const s2 = './imgs/rolete.png';
+let s = ''
+window.onload = function () {
+	setSrc('./imgs/detalj.png');
+}
+
+const handleClick = () => {
+	console.log(s)
+	if (s === s1) {
+		s = s2;
+	} else {
+		s = s1;
+	}
+	setSrc(s);
+}
+
+</script>
+</html>
