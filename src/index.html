@@ -15,6 +15,17 @@
 
 <script type="text/javascript">
 
+var directory = './imgs';
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open('GET', directory, false); // false for synchronous request
+xmlHttp.send(null);
+var ret = xmlHttp.responseText;
+const p = new DOMParser();
+const html = p.parseFromString(xmlHttp.responseText, 'text/html')
+console.log(html)
+// this is how you get all files in `imgs` folder
+console.log(html.getElementsByTagName('li'))
+
 const image = document.getElementById('image');
 const canvasSrc = document.getElementById('source');
 const canvasTrg = document.getElementById('target');
