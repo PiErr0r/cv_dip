@@ -1,5 +1,7 @@
 # Computer vision and Digital image processing
 
+to start the app at this time use `python3 -m http.server` and open the app in browser at `localhost:8000`
+
 ## Literature
 
 - Computer Vision Algorithms and Applications by Richard Szeliski
