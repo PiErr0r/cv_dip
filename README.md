@@ -10,6 +10,9 @@ to start the app at this time use `python3 -m http.server` and open the app in b
 
 ## TODO
 
+- solve ex 2.2 and 2.3 and implement 3d viewer
+  - assign z value to image and display it in the viewer as a surface (finally implement Perlin noise and use it as z value for the image surface)
+
 - matrix wrapper for image data
 - use DevTools as REPL to interact with image in real time
   - engine for displaying image in new canvas (similar to Matlab figure)
