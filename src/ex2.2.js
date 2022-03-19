@@ -2,15 +2,7 @@ const { cos, sin, PI } = Math;
 
 const getRect = (pts) => pts.map(([x, y, w]) => [x + 500, -y + 500]);
 
-function main() {
-	// crs
-	const ce = new CanvasEditor();
-	ce.point(500, 500, { size: 5 })
-	ce.singleLine([500, 0], [500,500])
-	ce.singleLine([500,500], [1000, 500])
-
-	const pts = [[1, 1], [2, -1], [-1.5, -1], [-1.1, 1]].map(pt => new Vector([...pt, 0.01]).dot(100))
-	ce.polygon(getRect(pts), { color: "red" });
+const drawPts = (pts) => {
 
 	const ptsTrans = pts.map(pt => pt.add(20));
 	ce.polygon(getRect(ptsTrans), { color: "cyan" });
@@ -57,26 +49,50 @@ function main() {
 		[0.002, 0.004, 0.5]
 	]);
 	const ptsProj = pts.map(pt => mProj.dot(pt)).map(pt => pt.dot(1/pt[2]));
-	console.log(ptsProj)
 	ce.polygon(getRect(ptsProj), { color: "lime" });
 
-	return;
+}
 
-	const pt = new Vector([100, 0, 1]);
-	ce.point(pt[0] + 500, -pt[1] + 500);
+function main() {
+	// crs
+	window.ce = new CanvasEditor();
+	ce.point(500, 500, { size: 5 })
+	ce.singleLine([500, 0], [500,500])
+	ce.singleLine([500,500], [1000, 500])
 
-	// const phi = PI/4;
-	const [tx, ty] = [10, 10];
+	const pts = [[1, 1], [2, -1], [-1.5, -1], [-1.1, 1]].map(pt => new Vector([...pt, 0.01]).dot(100))
+	ce.polygon(getRect(pts), { color: "red" });
+
+	drawPts(pts);
+
+	// check if point is on line segment
+	// https://lucidar.me/en/mathematics/check-if-a-point-belongs-on-a-line-segment/
+
+	const a = new Vector([1, 1, 0]);
+	const b = new Vector([3, 3, 0]);
+	// const c = new Vector([1, 1.1, 0]);
+	// const c = new Vector([4, 4, 0]);
+	const c = new Vector([2, 2, 0]);
+	const ab = a.add(b.neg());
+	const ac = a.add(c.neg());
+	const abXac = ab.cross(ac);
+	const K_ac = ab.dot(ac);
+	const K_ab = ab.dot(ab);
 	
-	// const m = new Matrix([
-	// 	[1, 0, tx],
-	// 	[0, 1, ty],
-	// 	[0, 0, 1],
-	// ]);
-
-	const tPt = m.dot(pt);
-	console.log(tPt)
-	ce.point(tPt[0] + 500, -tPt[1] + 500, { color: "red" });
+	if (K_ac < 0) {
+		console.log("Point C is not between A and B");
+	} else if (K_ac > K_ab) {
+		console.log("Point C is not between A and B");
+	} else if (K_ac === 0) {
+		console.log("Point C coincides with point A");
+	} else if (K_ac === K_ab) {
+		console.log("Point C coincides with point B");
+	} else if (0 < K_ac && K_ac < K_ab) {
+		console.log("Point C is between A and B");
+		if (abXac[0] === 0 && abXac[1] === 0 && abXac[2] === 0) {
+			console.log("Point C is on line segment AB");
+		}
+	}
 }
 
 window.onload = () => main();

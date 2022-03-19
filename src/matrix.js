@@ -1,3 +1,5 @@
+DEBUG = false
+
 class Matrix extends Array {
 	constructor(aOrData, b) {
 		if (Array.isArray(aOrData)) {
@@ -16,8 +18,6 @@ class Matrix extends Array {
 				this[i] = new Array(b).fill(0);
 			}
 		} else {
-			// console.trace()
-			// throw new Error("ASD");
 			super(aOrData)
 		}
 	}
@@ -157,10 +157,14 @@ class Matrix extends Array {
 			return Matrix._mulMM(this, m);
 		} else if (m instanceof Vector) {
 			if (m.length === this[0].length) {
-				console.warn("Vector (b) length same as matrix (A) column number. Will return `A * b`");
+				if (DEBUG) {
+					console.warn("Vector (b) length same as matrix (A) column number. Will return `A * b`");
+				}
 				return Matrix._mulMV(this, m);
 			} else if (m.length === this.length) {
-				console.warn("Vector (b) length same as matrix (A) row number. Will return `b * A`");
+				if (DEBUG) {
+					console.warn("Vector (b) length same as matrix (A) row number. Will return `b * A`");
+				}
 				return Matrix._mulMV_T(this, m);
 			} else {
 				// TODO: better error handling

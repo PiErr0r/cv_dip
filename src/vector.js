@@ -69,6 +69,19 @@ class Vector extends Array {
 		}
 	}
 
+	cross(v) {
+		if (Array.isArray(v) && v.length === this.length) {
+			const res = new Array(v.length);
+			res[0] = this[1] * v[2] - this[2] * v[1];
+			res[1] = this[2] * v[0] - this[0] * v[2];
+			res[2] = this[0] * v[1] - this[1] * v[0];
+			return new Vector(res);
+		} else {
+			// TODO: Better error handling
+			throw new Error("BAD stuff");				
+		}
+	}
+
 	neg() {
 		const res = new Array(this.length);
 		for (let i = 0; i < this.length; ++i) {
