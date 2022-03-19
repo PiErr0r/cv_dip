@@ -6,123 +6,12 @@
 	<title>test</title>
 </head>
 <body>
-<img id="image" src="" style="display: none;">
-<div>
-	<button onclick="handleClick()">Change src</button>
-	<button onclick="toggleRGB()">rgb</button>
-</div>
-<canvas id="source"></canvas>
-<canvas id="target1"></canvas>
-<canvas id="target2"></canvas>
-<canvas id="target3"></canvas>
+<canvas id="source" width="1000" height="1000" style="border: 1px solid black;"></canvas>
 </body>
 
-<script type="text/javascript">
+<script type="text/javascript" src="canvas_editor.js"></script>
+<script type="text/javascript" src="vector.js"></script>
+<script type="text/javascript" src="matrix.js"></script>
+<script type="text/javascript" src="ex2.2.js"></script>
 
-let rgb = false;
-
-var directory = './imgs';
-var xmlHttp = new XMLHttpRequest();
-xmlHttp.open('GET', directory, false); // false for synchronous request
-xmlHttp.send(null);
-var ret = xmlHttp.responseText;
-const p = new DOMParser();
-const html = p.parseFromString(xmlHttp.responseText, 'text/html')
-console.log(html)
-// this is how you get all files in `imgs` folder
-console.log(html.getElementsByTagName('li'))
-
-const image = document.getElementById('image');
-const canvasSrc = document.getElementById('source');
-const canvasTrg1 = document.getElementById('target1');
-const canvasTrg2 = document.getElementById('target2');
-const canvasTrg3 = document.getElementById('target3');
-
-const onImgLoad = function() {
-	const w = image.width, h = image.height;
-
-	canvasSrc.width = w;
-	canvasSrc.height = h;
-	canvasTrg1.width = w;
-	canvasTrg1.height = h;
-	canvasTrg2.width = w;
-	canvasTrg2.height = h;
-	canvasTrg3.width = w;
-	canvasTrg3.height = h;
-
-	const ctx_s = canvasSrc.getContext('2d');
-	ctx_s.drawImage(image, 0, 0);
-	const ctx_t1 = canvasTrg1.getContext('2d');
-	const ctx_t2 = canvasTrg2.getContext('2d');
-	const ctx_t3 = canvasTrg3.getContext('2d');
-
-	// Finally, get the image data
-	// ('data' is an array of RGBA pixel values for each pixel)
-	const data = ctx_s.getImageData(0, 0, w, h);
-	const data1 = new ImageData(w, h);
-	const data2 = new ImageData(w, h);
-	const data3 = new ImageData(w, h);
-	for (let i = 0; i < h; ++i) {
-		for (let j = 0; j < w; ++j) {
-			data1.data[i * 4 * w + 4 * j ] 	 = data.data[i * 4 * w + 4 * j ]
-			data1.data[i * 4 * w + 4 * j + 3] = data.data[i * 4 * w + 4 * j + 3]
-			if (rgb) {
-				data1.data[i * 4 * w + 4 * j + 1] = data.data[i * 4 * w + 4 * j ]
-				data1.data[i * 4 * w + 4 * j + 2] = data.data[i * 4 * w + 4 * j ]
-			}
-
-			data2.data[i * 4 * w + 4 * j + 1] = data.data[i * 4 * w + 4 * j + 1]
-			data2.data[i * 4 * w + 4 * j + 3] = data.data[i * 4 * w + 4 * j + 3]
-			if (rgb) {
-				data2.data[i * 4 * w + 4 * j ] 	 = data.data[i * 4 * w + 4 * j + 1]
-				data2.data[i * 4 * w + 4 * j + 2] = data.data[i * 4 * w + 4 * j + 1]
-			}
-
-			data3.data[i * 4 * w + 4 * j + 2] = data.data[i * 4 * w + 4 * j + 2]
-			data3.data[i * 4 * w + 4 * j + 3] = data.data[i * 4 * w + 4 * j + 3]
-			if (rgb) {
-				data3.data[i * 4 * w + 4 * j ] 	 = data.data[i * 4 * w + 4 * j + 2]
-				data3.data[i * 4 * w + 4 * j + 1] = data.data[i * 4 * w + 4 * j + 2]
-			}
-			// for (let k = 0; k < 3; ++k) {
-			// 	data.data[i * 4 * w + 4*j + k] = 0;
-			// }
-		}
-	}
-	ctx_t1.drawImage(image, 0, 0)
-	ctx_t1.putImageData(data1, 0, 0)
-	console.log(data1.data)
-	ctx_t2.drawImage(image, 0, 0)
-	ctx_t2.putImageData(data2, 0, 0)
-	ctx_t3.drawImage(image, 0, 0)
-	ctx_t3.putImageData(data3, 0, 0)
-
-}
-
-const setSrc = (src) => image.src = src;
-image.onload = onImgLoad;
-
-const s1 = './imgs/detalj.png';
-const s2 = './imgs/rolete.png';
-let s = s1;
-window.onload = function () {
-	setSrc(s);
-}
-
-const handleClick = () => {
-	console.log(s)
-	if (s === s1) {
-		s = s2;
-	} else {
-		s = s1;
-	}
-	setSrc(s);
-}
-
-const toggleRGB = () => {
-	rgb = !rgb;
-	setSrc(s);
-}
-
-</script>
 </html>
