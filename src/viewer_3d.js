@@ -1,7 +1,7 @@
 const FPS = 20;
 const DX = 0.01;
 const DY = 0.01;
-const DTHETA = 0.01;
+const DTHETA = 0.1;
 const SPEED = 1/FPS;
 
 let cnt = 0;
@@ -22,6 +22,7 @@ class Viewer3D {
 		this.R = new Uint8Array(4).fill(0); // left, up, right down - rotation
 		this.pos = new Float32Array(3).fill(0); // x, y, z
 		this.rot = new Float32Array(2).fill(0) // yaw in [-180, 180], pitch in [-90, 90]
+		this.rot[0] = Math.PI / 8
 
 		this.worldRenderer = new WorldRenderer(this.canvas, this.pos, this.rot);
 	}

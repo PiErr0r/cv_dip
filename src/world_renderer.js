@@ -17,6 +17,8 @@ class WorldRenderer {
 		this.entities = [ ['sphere', 5, 0, 0, { color: 'red', size: 2}] ];
 		this.R = new Matrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]);
 		// this.R = new Vector([0, 0, 0]);
+		this.ratioX = this.canvas.width / W;
+		this.ratioY = this.canvas.height / H;
 	}
 
 	initLine(color, width) {
@@ -64,27 +66,30 @@ class WorldRenderer {
 		const scale = v.dot(v) / F;
 
 		const v_me = this.R.inv().dot(v);
+		if (v_me[2] < 0) {
+			return;
+		}
 		const tg_alpha = v_me[2] / v_me[0];
 		const tg_beta = -v_me[1] / v_me[0];
-		// console.log(tg_beta, tg_alpha)
+		// console.log(tg_alpha, tg_beta)
 		// console.log(...this.R.inv())
-		// console.log(v_me)
 		// console.log(this.rot)
 		const cx = F * tg_beta;
 		const cy = F * tg_alpha;
+		
 		this.circle(cx, cy, scale, opts)
 	}
 
 	circle(x, y, s, opts) {
-		const u = x + this.canvas.width / 2;
-		const v = -y + this.canvas.height / 2;
+		const u =  x / W * this.canvas.width + this.canvas.width / 2;
+		const v = -y / H * this.canvas.height + this.canvas.height / 2;
 
 		const { color, size } = opts;
 
 		this.initLine(color, size);
 		// console.log(this.ctx.strokeStyle)
 		// console.log(u, v, size)
-		this.ctx.arc(u, v, 100 * size / s, 0, 2*Math.PI, true);
+		this.ctx.arc(u, v, size * this.ratioX / s, 0, 2*Math.PI, true);
 		this.ctx.fill();
 		// this.addElement(["arc", x, y, r, 0, endAngle, opts])
 
