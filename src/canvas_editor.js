@@ -22,31 +22,72 @@ class CanvasEditor {
     const clickX = evt.pageX - this.elemLeft;
 		const clickY = evt.pageY - this.elemTop;
 		const toRemove = [];
-		let found = 0;
+		const wasFound = Boolean(this.selectedEl);
+		let found = false;
     this.elements.forEach((element) => {
-    	if (element === this.selectedEl) {
+    	if (element === this.selectedEl || found) {
     		return;
     	}
     	const elType = element[0];
+    	exit:
     	switch (elType) {
     		case "point":
-    			const [_, x, y, opts] = element;
+    			const [_point, x, y, opts] = element;
     			const r = opts && opts.size || POINT_SIZE;
     			if (x - r <= clickX && clickX <= x + r &&
     					y - r <= clickY && clickY <= y + r) {
     				// toRemove.push(element);
     				const nOpts = { ...opts, color: "red", size: 2 * (r + 1) };
-    				this.point(x, y, nOpts);
+    				// this.point(x, y, nOpts);
     				this.selectedEl = element;
-    				this.removeElement(this.elements[ this.elements.length - 1 ]);
-    				++found;
+    				// this.removeElement(this.elements[ this.elements.length - 1 ]);
+    				found = true;
     			}
     			break;
+    		case "line":
+    		case "polygon": {
+    			const [_line, pts, opts] = element;
+    			let a = pts[0], b;
+    			console.log(opts.color);
+    			for (let i = 1; i < pts.length; ++i) {
+    				b = pts[i];
+    				if (isPointOnLineSegment([clickX, clickY], [a, b])) {
+    					const nOpts = { ...opts, color: "red", width: 2 * (opts.width || LINE_WIDTH) };
+    					this.selectedEl = element;
+	    				found = true;
+	    				break exit;		
+    				}
+    				a = b;
+    			}
+    			if (_line === "polygon") {
+	    			b = pts[0]
+    				if (isPointOnLineSegment([clickX, clickY], [a, b])) {
+    					const nOpts = { ...opts, color: "red", width: 2 * (opts.width || LINE_WIDTH) };
+    					this.selectedEl = element;
+	    				found = true;
+	    				break exit;		
+    				}
+    			}
+    			break;
+    		}
     		default:
     			console.log(`Not implemented: ${elType}`);
     	}
     });
-    if (found === 0) {
+
+    if (found) {
+    	const [type, ...args] = this.selectedEl;
+    	this.redrawElements();
+    	const opts = args[ args.length - 1 ];
+    	const nOpts = { ...opts,
+    		color: "red",
+    		size: 2 * (opts.size || POINT_SIZE),
+    		width: 2 * (opts.width || LINE_WIDTH),
+    	};
+    	args[ args.length - 1 ] = nOpts;
+    	this[type](...args);
+    	this.removeElement(this.elements[ this.elements.length - 1 ]);
+    } else {
     	this.selectedEl = null;
     	this.redrawElements();
     }

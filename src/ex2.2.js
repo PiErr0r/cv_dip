@@ -48,8 +48,12 @@ const drawPts = (pts) => {
 		[0.1, 0.8, 60],
 		[0.002, 0.004, 0.5]
 	]);
-	const ptsProj = pts.map(pt => mProj.dot(pt)).map(pt => pt.dot(1/pt[2]));
+	const ptsProj = pts.map(pt => mProj.dot(pt))//.map(pt => pt.dot(1/pt[2]));
 	ce.polygon(getRect(ptsProj), { color: "lime" });
+
+	// const mOrig = mAff.inv();
+	// const ptsOrig = ptsAff.map(pt => mOrig.dot(pt));
+	// ce.polygon(getRect(ptsOrig), { color: "black" });	
 
 }
 
@@ -60,39 +64,10 @@ function main() {
 	ce.singleLine([500, 0], [500,500])
 	ce.singleLine([500,500], [1000, 500])
 
-	const pts = [[1, 1], [2, -1], [-1.5, -1], [-1.1, 1]].map(pt => new Vector([...pt, 0.01]).dot(100))
+	const pts = [[1, 1], [2, -1], [-1.5, -1], [-1.1, 1]].map(pt => new Vector([...pt, 0]).dot(100))
 	ce.polygon(getRect(pts), { color: "red" });
 
 	drawPts(pts);
-
-	// check if point is on line segment
-	// https://lucidar.me/en/mathematics/check-if-a-point-belongs-on-a-line-segment/
-
-	const a = new Vector([1, 1, 0]);
-	const b = new Vector([3, 3, 0]);
-	// const c = new Vector([1, 1.1, 0]);
-	// const c = new Vector([4, 4, 0]);
-	const c = new Vector([2, 2, 0]);
-	const ab = a.add(b.neg());
-	const ac = a.add(c.neg());
-	const abXac = ab.cross(ac);
-	const K_ac = ab.dot(ac);
-	const K_ab = ab.dot(ab);
-	
-	if (K_ac < 0) {
-		console.log("Point C is not between A and B");
-	} else if (K_ac > K_ab) {
-		console.log("Point C is not between A and B");
-	} else if (K_ac === 0) {
-		console.log("Point C coincides with point A");
-	} else if (K_ac === K_ab) {
-		console.log("Point C coincides with point B");
-	} else if (0 < K_ac && K_ac < K_ab) {
-		console.log("Point C is between A and B");
-		if (abXac[0] === 0 && abXac[1] === 0 && abXac[2] === 0) {
-			console.log("Point C is on line segment AB");
-		}
-	}
 }
 
 window.onload = () => main();
