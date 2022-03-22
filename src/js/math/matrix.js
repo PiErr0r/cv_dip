@@ -190,6 +190,8 @@ class Matrix extends Array {
 	}
 
 	pinv() {
+		// Moore-Penrose Pseudoinverse
+		// https://www.math.ucla.edu/~laub/33a.2.12s/mppseudoinverse.pdf
 		return this.T().dot(this.dot(this.T()).inv());
 	}
 
