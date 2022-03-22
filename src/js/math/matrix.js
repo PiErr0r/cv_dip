@@ -10,7 +10,10 @@ class Matrix extends Array {
 			}
 		} else if (typeof aOrData === "number" && aOrData && !b) {
 			super(aOrData);
-			this.fill(0);
+			this.fill();
+			for (let i = 0; i < aOrData; ++i) {
+				this[i] = new Array(aOrData).fill(0);
+			}
 		} else if (typeof aOrData === "number" && typeof b === "number" && aOrData && b) {
 			super(aOrData);
 			this.fill();
@@ -120,7 +123,7 @@ class Matrix extends Array {
 	}
 
 	add(m) {
-		if (m instanceof Matrix && m.length === this.length && m[0].length === this[0].length) {
+		if (Matrix._isMatrix(m) && m.length === this.length && m[0].length === this[0].length) {
 			return Matrix._addMM(this, m);
 		} else if (m instanceof Vector) {
 			if (m.length === this[0].length) {
@@ -153,7 +156,7 @@ class Matrix extends Array {
 		} else if (elementWise) {
 			throw new Error("Worst stuff");
 		}
-		if (m instanceof Matrix && this[0].length === m.length) {
+		if (Matrix._isMatrix(m) && this[0].length === m.length) {
 			return Matrix._mulMM(this, m);
 		} else if (m instanceof Vector) {
 			if (m.length === this[0].length) {
@@ -178,10 +181,24 @@ class Matrix extends Array {
 		}	
 	}
 
+	removeSmall() {
+		const dim = this.length;
+		for (let i = 0; i < dim; ++i)
+			for (let j = 0; j < dim; ++j)
+				if (Math.abs(this[i][j]) < Number.EPSILON)
+					this[i][j] = 0;
+	}
+
+	pinv() {
+		return this.T().dot(this.dot(this.T()).inv());
+	}
+
 	inv() {
 		if (this.length !== this[0].length) {
 			throw new Error("Matrix must be square!");
 		}
+
+		this.removeSmall();
 		const dim = this.length;
 		const a = this.map((r, i) => [...r, ...(new Array(dim).fill(0).map((_, j) => j === i ? 1 : 0))]);
 		for (let i = 0; i < dim; ++i) {
@@ -220,6 +237,21 @@ class Matrix extends Array {
 		}
 		r += ']';
 		return r;
+	}
+
+	static eye(n) {
+		const m = new Matrix(n);
+		for (let i = 0; i < n; ++i) {
+			m[i][i] = 1;
+		}
+		return m;
+	}
+
+	static _isMatrix(m) {
+		return m instanceof Matrix
+			|| m instanceof Matrix3
+			|| m instanceof Matrix4
+			|| m instanceof MatrixN;
 	}
 
 	static _mulMM(m1, m2) {
@@ -324,5 +356,47 @@ class Matrix extends Array {
 			}
 		}
 		return new Matrix(res);
+	}
+}
+
+class MatrixN extends Matrix {
+	constructor(n, arr = null) {
+		if (n <= 0 || !n) {
+			this.sizeError(n);
+		}
+		if (arr !== null && !Array.isArray(arr)) {
+			this.parameterError(arr)
+		}
+		if (arr === null) {
+			super(n, n);
+		}
+		if (arr.length !== n || !arr.every(a => Array.isArray(a) && a.length === n)) {
+			this.lengthError(n);
+		}
+		super(arr);
+	}
+
+	parameterError(param) {
+		throw new Error(`Unrecognized parameter provided: ${param}`);
+	}
+
+	lengthError(n) {
+		throw new Error(`Wrong length of array or subarray provided, expected Array[${n}][${n}]`);
+	}
+
+	sizeError(n) {
+		throw new Error(`Unrecognized size parameter: ${n}`);
+	}
+}
+
+class Matrix3 extends MatrixN {
+	constructor(arr) {
+		super(3, arr);
+	}
+}
+
+class Matrix4 extends MatrixN {
+	constructor(arr) {
+		super(4, arr);
 	}
 }

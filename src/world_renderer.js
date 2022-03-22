@@ -1,24 +1,14 @@
-const POINT_SIZE = 5;
-const LINE_WIDTH = 1;
-const DEFAULT_COLOR = "#000000";
-
-const F = 2.4;
-const SCALE = 2;
-const W = 16 / SCALE;
-const H = 9 / SCALE;
 
 class WorldRenderer {
-	constructor(canvas, pos, rot) {
+	constructor(canvas/*, pos, rot*/) {
 		this.canvas = canvas;
-		this.pos = pos;
-		this.rot = rot;
 
 		this.ctx = this.canvas.getContext('2d');
 		this.entities = [ ['sphere', 5, 0, 0, { color: 'red', size: 2}] ];
-		this.R = new Matrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]);
-		// this.R = new Vector([0, 0, 0]);
 		this.ratioX = this.canvas.width / W;
 		this.ratioY = this.canvas.height / H;
+		this.T = null;
+		this.T_inv = null;
 	}
 
 	initLine(color, width) {
@@ -30,50 +20,35 @@ class WorldRenderer {
 		this.ctx.fillStyle = _color;
 	}
 
-	render() {
+	render(T) {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		const mP = new Matrix([
-			[Math.cos(this.rot[1]), 0, Math.sin(this.rot[1]), 0],
-			[0, 1, 0, 0],
-			[-Math.sin(this.rot[1]), 0, Math.cos(this.rot[1]), 0],
-			[0, 0, 0, 1]
-		])
-		const mY = new Matrix([
-			[Math.cos(this.rot[0]), -Math.sin(this.rot[0]), 0, 0],
-			[Math.sin(this.rot[0]), Math.cos(this.rot[0]), 0, 0],
-			[0, 0, 1, 0],
-			[0, 0, 0, 1]
-		]);
-		const t = new Matrix([
-			[1, 0, 0, this.pos[0]],
-			[0, 1, 0, this.pos[1]],
-			[0, 0, 1, this.pos[2]],
-			[0, 0, 0, 1]
-		])
-		this.R = mY.dot(mP).dot(t);
-		// const dx = Math.cos(this.rot[0]);
-		// const dy = Math.sin(this.rot[0]);
-		// const dz = Math.sin(this.rot[1]);
-		// this.R = new Vector([dx, dy, dz]);
+		this.T = T;
+		this.T_inv = T.pinv();
 		for (let i = 0; i < this.entities.length; ++i) {
 			const [type, ...args] = this.entities[i];
 			this[type](...args);
 		}
+		this.T = null;
+		this.T_inv = null;
 	}
 
 	sphere(x, y, z, opts) {
-		const v = new Vector([x - this.pos[0], y - this.pos[1], z - this.pos[2], 1]);
-		const scale = v.dot(v) / F;
+		const v = new Vector([x - T[0][3], y - T[1][3], z - T[2][3], 1]);
 
-		const v_me = this.R.inv().dot(v);
+		const v_me = this.T_inv.dot(v);
+		const scale = v_me.dot(v_me) / F;
+		if (false && cnt % 50 === 1) {
+			console.log("v", [...v])
+			console.log("v_me", [...v_me])
+		}
+
 		if (v_me[2] < 0) {
+			// object is behind me
 			return;
 		}
-		const tg_alpha = v_me[2] / v_me[0];
-		const tg_beta = -v_me[1] / v_me[0];
-		// console.log(tg_alpha, tg_beta)
-		// console.log(...this.R.inv())
-		// console.log(this.rot)
+
+		const tg_alpha = -v_me[1] / v_me[2];
+		const tg_beta =  -v_me[0] / v_me[2];
 		const cx = F * tg_beta;
 		const cy = F * tg_alpha;
 		
@@ -87,11 +62,7 @@ class WorldRenderer {
 		const { color, size } = opts;
 
 		this.initLine(color, size);
-		// console.log(this.ctx.strokeStyle)
-		// console.log(u, v, size)
 		this.ctx.arc(u, v, size * this.ratioX / s, 0, 2*Math.PI, true);
 		this.ctx.fill();
-		// this.addElement(["arc", x, y, r, 0, endAngle, opts])
-
 	}
 }
