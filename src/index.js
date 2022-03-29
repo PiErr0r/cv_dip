@@ -1,22 +1,165 @@
-function main() {
-	const v3d = new Viewer3D({pos: [0, 0, 0], rot: [-PI/2, -PI/2, 0]});
-	// const A = new Matrix([
-	// 	[ 6.123233995736766e-17, 6.123233995736766e-17, 1, 0.42999999038875103 ],
-	// 	[ -1, 3.749399456654644e-33, 6.123233995736766e-17, 2.6329905593148828e-17 ],
-	// 	[ 0, -1, 6.123233995736766e-17, 2.6329905593148828e-17 ],
-	// 	[ 0, 0, 0, 1 ],
-	// ]);
-	// const B = new Matrix([
-	// 	[ 6.123233995736766e-17, 6.123233995736766e-17, 1, 0.40999999083578587 ],
-	// 	[ -1, 3.749399456654644e-33, 6.123233995736766e-17, 2.5105258821374464e-17 ],
-	// 	[ 0, -1, 6.123233995736766e-17, 2.5105258821374464e-17 ],
-	// 	[ 0, 0, 0, 1 ],
-	// ])
-	// console.log("A", A.toString())
-	// console.log("A pinv", A.pinv().toString())
-	// console.log("B", B.toString())
-	// console.log("B pinv", B.pinv().toString())
+const __COLORS = [
+"AliceBlue",
+"AntiqueWhite",
+"Aqua",
+"Aquamarine",
+"Azure",
+"Beige",
+"Bisque",
+"Black",
+"BlanchedAlmond",
+"Blue",
+"BlueViolet",
+"Brown",
+"BurlyWood",
+"CadetBlue",
+"Chocolate",
+"Coral",
+"CornflowerBlue",
+"Cornsilk",
+"Crimson",
+"Cyan",
+"DarkBlue",
+"DarkCyan",
+"DarkGoldenRod",
+"DarkGray",
+"DarkGreen",
+"DarkKhaki",
+"DarkMagenta",
+"DarkOliveGreen",
+"DarkOrange",
+"DarkOrchid",
+"DarkRed",
+"DarkSalmon",
+"DarkSeaGreen",
+"DarkSlateBlue",
+"DarkSlateGray",
+"DarkTurquoise",
+"DarkViolet",
+"DeepPink",
+"DeepSkyBlue",
+"DimGray",
+"DodgerBlue",
+"FireBrick",
+"FloralWhite",
+"ForestGreen",
+"Fuchsia",
+"Gainsboro",
+"GhostWhite",
+"Gold",
+"GoldenRod",
+"Gray",
+"Green",
+"GreenYellow",
+"HoneyDew",
+"HotPink",
+"IndianRed",
+"Indigo",
+"Ivory",
+"Khaki",
+"Lavender",
+"LavenderBlush",
+"LawnGreen",
+"LemonChiffon",
+"LightBlue",
+"LightCoral",
+"LightCyan",
+"LightGoldenRodYellow",
+"LightGray",
+"LightGreen",
+"LightPink",
+"LightSalmon",
+"LightSeaGreen",
+"LightSkyBlue",
+"LightSlateGray",
+"LightSteelBlue",
+"LightYellow",
+"Lime",
+"LimeGreen",
+"Linen",
+"Magenta",
+"Maroon",
+"MediumAquaMarine",
+"MediumBlue",
+"MediumOrchid",
+"MediumPurple",
+"MediumSeaGreen",
+"MediumSlateBlue",
+"MediumSpringGreen",
+"MediumTurquoise",
+"MediumVioletRed",
+"MidnightBlue",
+"MintCream",
+"MistyRose",
+"Moccasin",
+"NavajoWhite",
+"Navy",
+"OldLace",
+"Olive",
+"OliveDrab",
+"Orange",
+"OrangeRed",
+"Orchid",
+"PaleGoldenRod",
+"PaleGreen",
+"PaleTurquoise",
+"PaleVioletRed",
+"PapayaWhip",
+"PeachPuff",
+"Peru",
+"Pink",
+"Plum",
+"PowderBlue",
+"Purple",
+"Red",
+"RosyBrown",
+"RoyalBlue",
+"SaddleBrown",
+"Salmon",
+"SandyBrown",
+"SeaGreen",
+"SeaShell",
+"Sienna",
+"Silver",
+"SkyBlue",
+"SlateBlue",
+"SlateGray",
+"Snow",
+"SpringGreen",
+"SteelBlue",
+"Tan",
+"Teal",
+"Thistle",
+"Tomato",
+"Turquoise",
+"Violet",
+"Wheat",
+"White",
+"WhiteSmoke",
+"Yellow",
+"YellowGreen",
+]
 
+function main() {
+	const initialPose = {pos: [0, 0, 1], rot: [0, PI, 0]};
+	const v3d = new Viewer3D(initialPose);
+	let cnt = 0;
+	const min = -10, max = 10;
+	// const vertices = [[5,-1,-1],[5,-1,1],[5,1,1],[5,1,-1]];
+	for (let i = min; i <= max; ++i) {
+		for (let j = min; j <= max; ++j) {
+			for (let k = min; k <= max; ++k) {
+				// console.log(i, j, k)
+				v3d.add('sphere', i/10 + Math.random(), j/10 + Math.random(), k/10 + Math.random(), { color: __COLORS[cnt++ % __COLORS.length], size: 0.05 });
+				// v3d.add('sphere', i, j, k, { color: "red", size: 1 });
+				// const f = [i, j, k];
+				// const verts = [f, [f[0], f[1] + 1, f[2]], [f[0], f[1] + 1, f[2] + 1], [f[0], f[1], f[2] + 1]];
+				// v3d.add('polygon', verts, { color: __COLORS[cnt++ % __COLORS.length] });
+			}
+		}
+	} 
+
+	// this.entities = [ ['sphere', 5, 0, 0, { color: 'red', size: 2}] ];
 }
 
 window.onload = main;

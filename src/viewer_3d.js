@@ -32,11 +32,23 @@ class Viewer3D {
 		this.T = Matrix.eye(4);
 		this.recalculateT(pos, rot);
 
-		this.worldRenderer = new WorldRenderer(this.canvas, this.position, this.rotation);
+		this.entityManager = new EntityManager();
+		this.worldRenderer = new WorldRenderer(this.canvas, this.entityManager);
 
 		this.canvas.addEventListener('focus', this.register.bind(this));
 		this.canvas.addEventListener('blur', this.unregister.bind(this));
 		this.interval = null;
+	}
+
+	add(...entity) {
+		const [type] = entity;
+		const method = `add${capitalize(type)}`;
+		if (!(method in this.entityManager)) {
+			throw new Error(`Entity type ${type} not implemented!`);
+		}
+		const pos = this.T.map(r => r[3]);
+		this.entityManager.setPosition(pos);
+		this.entityManager[method](...entity.slice(1));
 	}
 
 	register() {

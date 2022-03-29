@@ -1,10 +1,11 @@
 
 class WorldRenderer {
-	constructor(canvas/*, pos, rot*/) {
+	constructor(canvas, entityManager) {
 		this.canvas = canvas;
+		this.entityManager = entityManager;
 
 		this.ctx = this.canvas.getContext('2d');
-		this.entities = [ ['sphere', 5, 0, 0, { color: 'red', size: 2}] ];
+		
 		this.ratioX = this.canvas.width / W;
 		this.ratioY = this.canvas.height / H;
 		this.T = null;
@@ -24,45 +25,114 @@ class WorldRenderer {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.T = T;
 		this.T_inv = T.pinv();
-		for (let i = 0; i < this.entities.length; ++i) {
-			const [type, ...args] = this.entities[i];
-			this[type](...args);
+		const pos = T.map(r => r[3]);
+		// console.time("sort");
+		this.entityManager.sort(pos);
+		// console.timeEnd("sort");
+		const entities = this.entityManager.getEntities();
+		// console.log(entities.length);
+		// console.time("render");
+		const toRender = new Array(entities.length).fill(null);
+		let renderLen = entities.length;
+		for (let i = entities.length - 1; i >= 0 ; --i) {
+			if (entities[i].distance > MAX_DISTANCE) {
+				renderLen = entities.length - i - 1;
+				break;
+			}
+			toRender[entities.length - i - 1] = entities[i];
 		}
+		// console.log(renderLen, toRender)
+		for (let i = renderLen - 1; i >= 0; --i) {
+			if (toRender[i] === null) break;
+			// console.log("HERE")
+			const [type, ...args] = toRender[i].data;
+			this[type](...args)
+		}
+		// for (let entity of entities.values()) {
+		// 	if (entity.distance > 1.5) continue;
+		// 	const [type, ...args] = entity.data;
+		// 	this[type](...args);
+		// }
+		// console.timeEnd("render")
 		this.T = null;
 		this.T_inv = null;
 	}
 
 	sphere(x, y, z, opts) {
-		const v = new Vector([x - T[0][3], y - T[1][3], z - T[2][3], 1]);
-
+		const v = this.getVector(x, y, z);
 		const v_me = this.T_inv.dot(v);
 		const scale = v_me.dot(v_me) / F;
-		if (false && cnt % 50 === 1) {
-			console.log("v", [...v])
-			console.log("v_me", [...v_me])
-		}
-
-		if (v_me[2] < 0) {
-			// object is behind me
-			return;
-		}
-
-		const tg_alpha = -v_me[1] / v_me[2];
-		const tg_beta =  -v_me[0] / v_me[2];
-		const cx = F * tg_beta;
-		const cy = F * tg_alpha;
 		
-		this.circle(cx, cy, scale, opts)
+		if (v_me[2] < 0) return; // object is behind me
+
+		const [cx, cy] = this.getCoords(v_me)
+		this._circle(cx, cy, scale, opts)
 	}
 
-	circle(x, y, s, opts) {
-		const u =  x / W * this.canvas.width + this.canvas.width / 2;
-		const v = -y / H * this.canvas.height + this.canvas.height / 2;
-
+	_circle(x, y, s, opts) {
+		const [u, v] = this.getImgCoords(x, y);
 		const { color, size } = opts;
-
+		// console.log(u, v, size)
 		this.initLine(color, size);
+		// console.log(u, v)
 		this.ctx.arc(u, v, size * this.ratioX / s, 0, 2*Math.PI, true);
 		this.ctx.fill();
+	}
+
+	polygon(vertices, opts, T) {
+		const vf = this.getVector(...vertices[0])
+		const vf_me = this.T_inv.dot(vf);
+		const [fcx, fcy] = this.getCoords(vf_me);
+
+		const { color, size } = opts;
+		this.initLine(color, size);
+		this._moveTo(fcx, fcy);
+
+		for (let i = 0; i < vertices.length; ++i) {
+			const v = this.getVector(...vertices[i])
+			const v_me = this.T_inv.dot(v);
+			const [cx, cy] = this.getCoords(v_me);
+			this._lineTo(cx, cy);
+		}
+		this._finishPolygon();
+	}
+
+	_moveTo(x, y) {
+		const [u, v] = this.getImgCoords(x, y);
+		this.ctx.moveTo(u, v);
+	}
+
+	_lineTo(x, y) {
+		const [u, v] = this.getImgCoords(x, y);
+		this.ctx.lineTo(u, v);
+	}
+
+	_finishPolygon() {
+		this.ctx.closePath();
+		this.ctx.fill();
+	}
+
+	point(x, y, z, opts) {
+		opts.size = PT_SIZE;
+		// opts.size = 1;
+		this.sphere(x, y, z, opts);
+	}
+
+	getImgCoords(x, y) {
+		const u =  x / W * this.canvas.width + this.canvas.width / 2;
+		const v = -y / H * this.canvas.height + this.canvas.height / 2;
+		return [u, v];
+	}
+
+	getVector(x, y, z) {
+		return new Vector([x - this.T[0][3], y - this.T[1][3], z - this.T[2][3], 1]);
+	}
+
+	getCoords(v) {
+		const tg_alpha = -v[1] / v[2];
+		const tg_beta =  -v[0] / v[2];
+		const cx = F * tg_beta;
+		const cy = F * tg_alpha;
+		return [cx, cy];
 	}
 }
