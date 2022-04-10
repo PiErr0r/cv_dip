@@ -63,10 +63,11 @@ class EntityManager {
 		const e = new Entity(entity, this.pos);
 		if (this.entities.length === 0) {
 			this.entities.push(e);
-			return;
+			// return;
 		}
-		const [i, pos] = binSearch(this.entities, e, (a, b) => b.distance - a.distance);
-		this.entities.splice(Math.max(0, pos) + i, 0, e);
+		this.entities.push(e);
+		// const [i, pos] = binSearch(this.entities, e, (a, b) => b.distance - a.distance);
+		// this.entities.splice(Math.max(0, pos) + i, 0, e);
 	}
 
 	addSphere(x, y, z, opts) {
