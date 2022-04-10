@@ -8,6 +8,7 @@ class Entity {
 
 	recalculate(position) {
 		switch (this.data[0]) {
+			case 'pixel':
 			case 'point':
 			case 'sphere':
 				const [sx, sy, sz, sOpts] = this.data.slice(1);
@@ -44,37 +45,11 @@ class EntityManager {
 	}
 
 	sort(pos) {
-		let prevD = this.entities[0].distance;
-		let inOrder = true;
 		for (let i = this.entities.length - 1; i >= 0; --i) {
 			this.entities[i].recalculate(pos);
-			inOrder = this.entities[i].distance < prevD;
-			prevD = this.entities[i].distance;
-			if (this.entities[i].distance > MAX_DISTANCE) {
-				break
-			}
 		}
-		// for (let entity of this.entities) {
-		// 	entity.recalculate(pos);
-		// }
-		for (let i = this.entities.length - 1; i >= 0 && !inOrder; --i) {
-			inOrder = true;
-			for (let j = i - 1; j >= 0; --j) {
-				if (this.entities[j].distance < this.entities[i].distance) {
-					const tmp = this.entities[j];
-					this.entities[j] = this.entities[i];
-					this.entities[i] = tmp;
-					inOrder = false;
-				}
-				if (this.entities[j].distance > MAX_DISTANCE) {
-					break
-				}
-			}
-			if (this.entities[i].distance > MAX_DISTANCE) {
-				break
-			}
-		}
-		// this.entities.sort();
+
+		this.entities.sort((a, b) => b.distance - a.distance)
 	}
 
 	setPosition(pos) {
@@ -106,5 +81,9 @@ class EntityManager {
 
 	addPoint(x, y, z, opts) {
 		this.addEntity(['point', x, y, z, opts]);
+	}
+
+	addPixel(x, y, z, opts) {
+		this.addEntity(['pixel', x, y, z, opts])
 	}
 }

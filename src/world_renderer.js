@@ -79,7 +79,7 @@ class WorldRenderer {
 		this.ctx.fill();
 	}
 
-	polygon(vertices, opts, T) {
+	polygon(vertices, opts) {
 		const vf = this.getVector(...vertices[0])
 		const vf_me = this.T_inv.dot(vf);
 		const [fcx, fcy] = this.getCoords(vf_me);
@@ -95,6 +95,17 @@ class WorldRenderer {
 			this._lineTo(cx, cy);
 		}
 		this._finishPolygon();
+	}
+
+	pixel(x, y, z, opts) {
+		const vertices = [
+			[x, y, z],
+			[x + PX_SIZE, y, z],
+			[x + PX_SIZE, y + PX_SIZE, z],
+			[x, y + PX_SIZE, z]
+		];
+		// this.polygon(vertices, opts);
+		this.point(x, y, z, opts)
 	}
 
 	_moveTo(x, y) {

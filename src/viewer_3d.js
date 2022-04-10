@@ -24,8 +24,8 @@ class Viewer3D {
 		}
 
 		this.keys = new Uint8Array(400).fill(0);
-		this.move = new Uint8Array(4).fill(0); // left, up, right down - translation
-		this.rotate = new Uint8Array(4).fill(0); // left, up, right down - rotation
+		this.move = new Uint8Array(6).fill(0); // left, forward, right, back, up, down - translation
+		this.rotate = new Uint8Array(6).fill(0); // left, up, right down - rotation
 
 		// initial camera rotation
 		const { pos, rot } = initialPose;
@@ -71,12 +71,12 @@ class Viewer3D {
 	handleKeyDown(evt) {
 		// prevent Tab from changing focus
 		if (evt.keyCode == 9)  evt.preventDefault();
-		if (this.keys[evt.keyCode]) {
-			return
-		}
+		// if (this.keys[evt.keyCode]) {
+		// 	return
+		// }
 
 		this.keys[evt.keyCode] = 1;
-		switch (evt.keyCode) {
+		switch (!evt.shiftKey && evt.keyCode) {
 			case 65: this.move[0] = 1; break; // a
 			case 87: this.move[1] = 1; break; // w
 			case 68: this.move[2] = 1; break; // d
@@ -87,11 +87,26 @@ class Viewer3D {
 			case 40: this.rotate[3] = 1; break; // down
 			default: break; // do nothing
 		}
+
+		switch (evt.shiftKey && evt.keyCode) {
+			case 87: this.move[4] = 1; break; // w
+			case 83: this.move[5] = 1; break; // s
+			case 37: this.rotate[4] = 1; break; // left
+			case 39: this.rotate[5] = 1; break; // right
+		}
+
+		if (evt.shiftKey) {
+			this.move[0] = this.move[1] = this.move[2] = this.move[3] = 0;
+			this.rotate[0] = this.rotate[1] = this.rotate[2] = this.rotate[3] = 0;
+		} else {
+			this.move[4] = this.move[5] = 0;
+			this.rotate[4] = this.rotate[5] = 0;
+		}
 	}
 
 	handleKeyUp(evt) {
 		this.keys[evt.keyCode] = 0;
-		switch (evt.keyCode) {
+		switch (!evt.shiftKey && evt.keyCode) {
 			case 65: this.move[0] = 0; break; // a
 			case 87: this.move[1] = 0; break; // w
 			case 68: this.move[2] = 0; break; // d
@@ -101,6 +116,13 @@ class Viewer3D {
 			case 39: this.rotate[2] = 0; break; // right
 			case 40: this.rotate[3] = 0; break; // down
 			default: break; // do nothing
+		}
+
+		switch (evt.shiftKey && evt.keyCode) {
+			case 87: this.move[4] = 0; break; // w
+			case 83: this.move[5] = 0; break; // s
+			case 37: this.rotate[4] = 0; break; // left
+			case 39: this.rotate[5] = 0; break; // right
 		}
 	}
 
@@ -135,6 +157,8 @@ class Viewer3D {
 		if (this.move[1]) pos[2] =  DZ;
 		if (this.move[2]) pos[0] = -DX;
 		if (this.move[3]) pos[2] = -DZ;
+		if (this.move[4]) pos[1] = -DY;
+		if (this.move[5]) pos[1] =  DY;
 
 		// rotation
 		const rot = new Float32Array(3).fill(0)
@@ -142,6 +166,8 @@ class Viewer3D {
 		if (this.rotate[1]) rot[1] =  DTHETA;
 		if (this.rotate[2]) rot[2] = -DTHETA;
 		if (this.rotate[3]) rot[1] = -DTHETA;
+		if (this.rotate[4]) rot[0] =  DTHETA;
+		if (this.rotate[5]) rot[0] = -DTHETA;
 
 		if (rot.every(r => r === 0) && pos.every(p => p === 0)) {
 			return false;
