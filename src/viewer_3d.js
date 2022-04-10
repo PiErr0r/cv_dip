@@ -71,9 +71,6 @@ class Viewer3D {
 	handleKeyDown(evt) {
 		// prevent Tab from changing focus
 		if (evt.keyCode == 9)  evt.preventDefault();
-		// if (this.keys[evt.keyCode]) {
-		// 	return
-		// }
 
 		this.keys[evt.keyCode] = 1;
 		switch (!evt.shiftKey && evt.keyCode) {

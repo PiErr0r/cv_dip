@@ -26,12 +26,8 @@ class WorldRenderer {
 		this.T = T;
 		this.T_inv = T.pinv();
 		const pos = T.map(r => r[3]);
-		// console.time("sort");
 		this.entityManager.sort(pos);
-		// console.timeEnd("sort");
 		const entities = this.entityManager.getEntities();
-		// console.log(entities.length);
-		// console.time("render");
 		const toRender = new Array(entities.length).fill(null);
 		let renderLen = entities.length;
 		for (let i = entities.length - 1; i >= 0 ; --i) {
@@ -41,19 +37,12 @@ class WorldRenderer {
 			}
 			toRender[entities.length - i - 1] = entities[i];
 		}
-		// console.log(renderLen, toRender)
+
 		for (let i = renderLen - 1; i >= 0; --i) {
 			if (toRender[i] === null) break;
-			// console.log("HERE")
 			const [type, ...args] = toRender[i].data;
 			this[type](...args)
 		}
-		// for (let entity of entities.values()) {
-		// 	if (entity.distance > 1.5) continue;
-		// 	const [type, ...args] = entity.data;
-		// 	this[type](...args);
-		// }
-		// console.timeEnd("render")
 		this.T = null;
 		this.T_inv = null;
 	}
@@ -98,13 +87,6 @@ class WorldRenderer {
 	}
 
 	pixel(x, y, z, opts) {
-		const vertices = [
-			[x, y, z],
-			[x + PX_SIZE, y, z],
-			[x + PX_SIZE, y + PX_SIZE, z],
-			[x, y + PX_SIZE, z]
-		];
-		// this.polygon(vertices, opts);
 		this.point(x, y, z, opts)
 	}
 

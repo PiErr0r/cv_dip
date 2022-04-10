@@ -40,7 +40,6 @@ class Entity {
 class EntityManager {
 	pos = null;
 	constructor() {
-		// this.entities = new PriorityQueue([], (a, b) => b.distance - a.distance);
 		this.entities = [];
 	}
 
@@ -68,7 +67,6 @@ class EntityManager {
 		}
 		const [i, pos] = binSearch(this.entities, e, (a, b) => b.distance - a.distance);
 		this.entities.splice(Math.max(0, pos) + i, 0, e);
-		// this.entities.push(e);
 	}
 
 	addSphere(x, y, z, opts) {
