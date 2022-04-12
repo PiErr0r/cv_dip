@@ -14,9 +14,16 @@ function generateUUID() { // Public Domain/MIT
     });
 }
 
-
 function capitalize(s) {
     if (!s) throw new Error(`Can't capitalizes string ${s}`);
     if (typeof s !== 'string') throw new Error(`Not a string: ${s}`);
     return s[0].toUpperCase() + s.slice(1);
+}
+
+function getColorFromRGB(r, g, b) {
+    const f = Math.floor;
+    const map = {10:'a',11:'b',12:'c',13:'d',14:'e',15:'f'};
+    const handler = {get(t, p){return p < 10 ? f(p) : t[f(p)]}};
+    const M = new Proxy(map, handler);
+    return `#${M[r/16]}${M[r%16]}${M[g/16]}${M[g%16]}${M[b/16]}${M[b%16]}`;
 }
