@@ -1,34 +1,3 @@
-function getColor(r, g, b) {
-	const f = Math.floor;
-	const map = {10:'a',11:'b',12:'c',13:'d',14:'e',15:'f'};
-	const handler = {get(t, p){return p < 10 ? f(p) : t[f(p)]}};
-	const M = new Proxy(map, handler);
-	return `#${M[r/16]}${M[r%16]}${M[g/16]}${M[g%16]}${M[b/16]}${M[b%16]}`;
-}
-
-function createOption(filename) {
-	const [name, ext] = filename.split('.');
-	if (ext === 'tif' || ext === 'tiff') return null;
-	const option = document.createElement('option');
-	option.innerText = name;
-	option.id = name.toLowerCase();
-	option.value = filename;
-	return option;
-}
-
-function initImagePicker(handleChange) {
-	const picker = document.getElementById("image-picker");
-	return fetch("imgs/index.txt").then(r => r.text()).then(resp => {
-		const imgs = resp.split("\n");
-		imgs.forEach(img => {
-			const option = createOption(img);
-			if (option !== null)
-				picker.appendChild(option);
-		});
-		picker.addEventListener('change', handleChange);
-		return "Done";
-	});
-}
 
 function initViewer(data, w, h) {
 	const initialPose = {pos: [0, 0, 1], rot: [0, PI, 0]};
@@ -65,18 +34,12 @@ function init3d() {
 	initViewer(data, w, h);
 }
 
-function imageChange(evt) {
-	const name = evt.target.value;
-	if (!name || !name.length) return;
-	const img = document.getElementById('image-container');
-	img.src = `imgs/${name}`;
-}
-
 function main() {
-	initImagePicker(imageChange).then((res) => {
+	const img = new Img();
+	initImagePicker(img.changeSrc).then((res) => {
 		console.log("initialization", res);
-		const img = document.getElementById('image-container');
-		img.addEventListener("load", init3d);
+		const imgContainer = document.getElementById('image-container');
+		imgContainer.addEventListener("load", img.onImageLoad);
 	})
 }
 
