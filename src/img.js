@@ -104,7 +104,7 @@ class Img {
 		if (id === null || id === undefined) {
 			id = this.targetCnt - 1;				
 		}
-		this._log(`disp(${id}}`);
+		this._log(`disp(${id})`);
 		const canvas = document.getElementById(`target-${id}`);
 		if (!canvas) return false;
 		const ctx = canvas.getContext('2d');
@@ -112,7 +112,6 @@ class Img {
 		blank.width = this.size.w;
 		blank.height = this.size.h;
 		ctx.drawImage(blank, 0, 0);
-		console.log(this.image)
 		ctx.putImageData(this.image, 0, 0);
 	}
 
