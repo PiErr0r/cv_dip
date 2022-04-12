@@ -1,6 +1,7 @@
 function createOption(filename) {
 	const [name, ext] = filename.split('.');
-	if (ext === 'tif' || ext === 'tiff') return null;
+	if (ext === 'tif' || ext === 'tiff' || ext === 'txt')
+		return null;
 	const option = document.createElement('option');
 	option.innerText = name;
 	option.id = name.toLowerCase();

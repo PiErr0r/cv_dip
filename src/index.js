@@ -34,12 +34,13 @@ function init3d() {
 	initViewer(data, w, h);
 }
 
+var img;
 function main() {
-	const img = new Img();
-	initImagePicker(img.changeSrc).then((res) => {
+	img = new Img();
+	initImagePicker((evt) => img.changeSrc(evt)).then((res) => {
 		console.log("initialization", res);
 		const imgContainer = document.getElementById('image-container');
-		imgContainer.addEventListener("load", img.onImageLoad);
+		imgContainer.addEventListener("load", (evt) => img.onImageLoad(evt));
 	})
 }
 

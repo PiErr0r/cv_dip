@@ -4,6 +4,13 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>test</title>
+		<style type="text/css">
+			canvas {
+				margin: 2px;
+				border: 1px solid black;
+				float: inline-start;
+			}
+		</style>
 	</head>
 	<body>
 		<img id="image-container" src="" style="display: none;"/>
@@ -12,10 +19,12 @@
 				<option id="initial" value="">-- Choose an image</option>
 			</select>
 		</div>
-		<canvas id="source"></canvas>
-		<canvas id="target"></canvas>
+		<div id="canvas-wrapper">
+			<canvas id="source"></canvas>
+		</div>
 	</body>
 	<script type="text/javascript" src="js/elements/image_picker.js"></script>
+	<script type="text/javascript" src="logger.js"></script>
 	<script type="text/javascript" src="img.js"></script>
 	<script type="text/javascript" src="index.js"></script>
 </html>
