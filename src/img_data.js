@@ -2,7 +2,7 @@
 
 class ImgData extends ImageData {
   constructor(image, logFn) {
-    this = {...this, ...image};
+    super(image.data, image.width);
     this.grayscale = false;
     this.logFn = logFn;
   }
@@ -30,7 +30,7 @@ class ImgData extends ImageData {
             }
             sum /= 3;
             for (let k = 0; k < 3; ++k) {
-              this.data[row * 4 * this.width + 4 * col + k] = sum;
+              this.data[i * 4 * this.width + 4 * j + k] = sum;
             }
           }
         }
@@ -39,7 +39,7 @@ class ImgData extends ImageData {
         for (let i = 0; i < this.height; ++i) {
           for (let j = 0; j < this.width; ++j) {
             for (let k = 0; k < 3; ++k) {
-              this.data[row * 4 * this.width + 4 * col + k] = this.g(i, j, _band);
+              this.data[i * 4 * this.width + 4 * j + k] = this.g(i, j, _band);
             }
           }
         }
@@ -53,7 +53,7 @@ class ImgData extends ImageData {
     @returns: int
   */
   getBand(band) {
-    if (typeof band !== 'string') {
+    if (typeof band === 'string') {
       switch (band) {
         case 'r':
         case 'R':
@@ -74,7 +74,7 @@ class ImgData extends ImageData {
     } else if (typeof band !== 'number') {
       throw new Error(`Unrecognized band passed: ${band}`);
     } else {
-      if (band !== 0 || band !== 1 || band !== 2) {
+      if (band !== 0 && band !== 1 && band !== 2) {
         throw new Error(`Unrecognized band passed: ${band}`);
       } else {
         return band;

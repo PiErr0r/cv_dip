@@ -27,7 +27,7 @@ class Img {
 		this.imageCopy = null;
 
 		// algorithm wrapper
-		this.algo = new Algo(this.imageCopy, this._log.bind(this));
+		// this.algo = new Algo(this.imageCopy, this._log.bind(this));
 	}
 
 	/**
@@ -117,6 +117,8 @@ class Img {
 		@returns: void
 		*/
 	copy() {
+		const w = this.image.width;
+		const h = this.image.height;
 		this.imageCopy = new ImgData(this.ctxSource.getImageData(0, 0, w, h), this._log.bind(this));
 	}
 
@@ -140,11 +142,11 @@ class Img {
 	/**
 		@name: delete
 		@description: delete canvas view by id, return true if canvas view with id exists, otherwise false
-		@params: int id
+		@params: string id
 		@returns: boolean
 	*/
 	delete(id) {
-		const canvas = document.getElementById(`target-${id}`);
+		const canvas = document.getElementById(id);
 		if (!canvas) return false;
 		this._log(`delete(${id})`);
 		canvas.remove();
