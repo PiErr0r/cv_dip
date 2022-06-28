@@ -1,4 +1,5 @@
 
+// saved globally on purpose so you can make changes in the console and use it as REPL
 var img;
 
 function processImage(evt) {

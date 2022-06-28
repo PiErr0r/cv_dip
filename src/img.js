@@ -2,18 +2,28 @@
 
 class Img {
 	constructor() {
+		// canvas view wrapper
 		this._wrapper = document.getElementById('canvas-wrapper');
+		// source canvas view
 		this.source = document.getElementById('source');
+		// source canvas view context
 		this.ctxSource = this.source.getContext('2d');
 
+		// canvas view size
 		this.size = null;
+		// counts number of canvas views
 		this.targetCnt = 0;
 
+		// is image loaded
 		this.loaded = false;
 
+		// enable loggings
 		this.LOG = false;
 		// logger is here to document which commands were used to manipulate images
 		this.logger = new Logger();
+
+		// internal image data
+		this.image = null;
 	}
 
 	/**
@@ -92,7 +102,7 @@ class Img {
 		this.source.width = w;
 		this.source.height = h;
 		this.ctxSource.drawImage(image, 0, 0);
-		this.image = this.ctxSource.getImageData(0, 0, w, h);
+		this.image = new ImgData(this.ctxSource.getImageData(0, 0, w, h));
 		this.loaded = true;
 	}
 
@@ -181,5 +191,4 @@ class Img {
 		ctx.drawImage(blank, 0, 0);
 		ctx.putImageData(this.image, 0, 0);
 	}
-
 }
