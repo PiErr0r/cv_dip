@@ -24,9 +24,10 @@ class Img {
 
 		// internal image data
 		this.image = null;
+		this.imageCopy = null;
 
 		// algorithm wrapper
-		this.algo = new Algo(this.image, this._log.bind(this));
+		this.algo = new Algo(this.imageCopy, this._log.bind(this));
 	}
 
 	/**
@@ -41,10 +42,10 @@ class Img {
 	}
 
 	/**
-	@name: logEnd
-	@description: disable logging functionalities
-	@params: void
-	@returns: void
+		@name: logEnd
+		@description: disable logging functionalities
+		@params: void
+		@returns: void
 	*/
 	logEnd() {
 		this.LOG = false;
@@ -77,10 +78,10 @@ class Img {
 	}
 
 	/**
-	@name: changeSrc
-	@description: change source url of internal image, this method is called when imgs picker value is changed
-	@params: OnChangeEvent evt
-	@returns: void
+		@name: changeSrc
+		@description: change source url of internal image, this method is called when imgs picker value is changed
+		@params: OnChangeEvent evt
+		@returns: void
 	*/
 	changeSrc(evt) {
 		this.loaded = false;
@@ -92,10 +93,10 @@ class Img {
 	}
 
 	/**
-	@name: onImageLoad
-	@description: save image internally when it is loaded in the image-container
-	@params: OnLoadEvent evt
-	@returns: void
+		@name: onImageLoad
+		@description: save image internally when it is loaded in the image-container
+		@params: OnLoadEvent evt
+		@returns: void
 	*/
 	onImageLoad(evt) {
 		this.deleteAll();
@@ -107,6 +108,16 @@ class Img {
 		this.ctxSource.drawImage(image, 0, 0);
 		this.image = new ImgData(this.ctxSource.getImageData(0, 0, w, h), this._log.bind(this));
 		this.loaded = true;
+	}
+
+	/**
+		@name: copy
+		@description: set current image data to imageCopy
+		@params: void
+		@returns: void
+		*/
+	copy() {
+		this.imageCopy = new ImgData(this.ctxSource.getImageData(0, 0, w, h), this._log.bind(this));
 	}
 
 	/**
@@ -127,13 +138,13 @@ class Img {
 	}
 
 	/**
-	@name: delete
-	@description: delete canvas view by id, return true if canvas view with id exists, otherwise false
-	@params: string id
-	@returns: boolean
+		@name: delete
+		@description: delete canvas view by id, return true if canvas view with id exists, otherwise false
+		@params: int id
+		@returns: boolean
 	*/
 	delete(id) {
-		const canvas = document.getElementById(id);
+		const canvas = document.getElementById(`target-${id}`);
 		if (!canvas) return false;
 		this._log(`delete(${id})`);
 		canvas.remove();
@@ -141,10 +152,10 @@ class Img {
 	}
 
 	/**
-	@name: deleteAll
-	@description: delete all existing canvas views, returns true if all views were successfully deleted
-	@params: void
-	@returns: boolean
+		@name: deleteAll
+		@description: delete all existing canvas views, returns true if all views were successfully deleted
+		@params: void
+		@returns: boolean
 	*/
 	deleteAll() {
 		this._log(`deleteAll()`);
@@ -158,10 +169,10 @@ class Img {
 	}
 
 	/**
-	@name: getIds
-	@description: returns list of all canvas view ids
-	@params: void
-	@returns: string[]
+		@name: getIds
+		@description: returns list of all canvas view ids
+		@params: void
+		@returns: string[]
 	*/
 	getIds() {
 		this._log(`getIds()`);
@@ -175,12 +186,12 @@ class Img {
 	}
 
 	/**
-	@name: disp
-	@description: display internal image data in specified canvas
-	@params: string id?, if id is null or undefined display the image in last canvas which was created
-	@returns: void
+		@name: disp
+		@description: display internal image data in specified canvas, allowed to display copy of image data
+		@params: int id?, boolean original?, if id is null or undefined display the image in last canvas which was created
+		@returns: void
 	*/
-	disp(id) {
+	disp(id = null, original = false) {
 		if (id === null || id === undefined) {
 			id = this.targetCnt - 1;				
 		}
@@ -192,6 +203,10 @@ class Img {
 		blank.width = this.size.w;
 		blank.height = this.size.h;
 		ctx.drawImage(blank, 0, 0);
-		ctx.putImageData(this.image, 0, 0);
+		if (original) {
+			ctx.putImageData(this.image, 0, 0);
+		} else {
+			ctx.putImageData(this.imageCopy, 0, 0);
+		}
 	}
 }

@@ -11,6 +11,12 @@ class ImgData extends ImageData {
     this.logFn(`image.${data}`);
   }
 
+  /**
+    @name: setGrayscale
+    @description: change image to grayscale by some band or using average or back to rgb
+    @params: boolean isGrayscale, int|char band
+    @returns: void
+  */
   setGrayscale(isGrayscale, band) {
     this._log(`setGrayscale(${isGrayscale}, ${band})`)
     this.grayscale = isGrayscale;
@@ -40,7 +46,12 @@ class ImgData extends ImageData {
       }
     }
   }
-
+  /**
+    @name: getBand
+    @description: get band integer value from char value
+    @params: char band
+    @returns: int
+  */
   getBand(band) {
     if (typeof band !== 'string') {
       switch (band) {
@@ -71,6 +82,12 @@ class ImgData extends ImageData {
     }
   }
 
+  /**
+    @name: g
+    @description: get pixel value at row column and band
+    @params: int row, int col, char|int band
+    @returns: int
+  */
   g(row, col, band) {
     if (row < 0 || row >= this.height) throw new Error('Row out of bounds');
     if (col < 0 || col >= this.width)  throw new Error('Column out of bounds');
@@ -81,6 +98,12 @@ class ImgData extends ImageData {
     return this.data[row * 4 * this.width + 4 * col + _band];
   }
 
+  /**
+    @name: _s
+    @description: set pixel value at row column and band
+    @params: int row, int col, char|int band, int value
+    @returns: void
+  */
   _s(row, col, band, value) {
     if (row < 0 || row >= this.height) throw new Error('Row out of bounds');
     if (col < 0 || col >= this.width) throw new Error('Column out of bounds');
@@ -94,8 +117,49 @@ class ImgData extends ImageData {
     this.data[row * 4 * this.width + 4 * col + _band] = value;
   }
 
+  /**
+    @name: s
+    @description: set pixel value at row column and band with logging
+    @params: int row, int col, char|int band, int value
+    @returns: void
+  */
   s(row, col, band, value) {
     this._log(`s(${row}, ${col}, ${band}, ${value})`);
     this._s(row, col, band, value);
+  }
+
+  /**
+    @name: ga
+    @description: get alpha value at row column
+    @params: int row, int col
+    @returns: int
+  */
+  ga(row, col) {
+    if (row < 0 || row >= this.height) throw new Error('Row out of bounds');
+    if (col < 0 || col >= this.width) throw new Error('Column out of bounds');
+    this.data[row * 4 * this.width + 4 * col + 3];
+  }
+
+  /**
+    @name: _sa
+    @description: set pixel alpha value at row column
+    @params: int row, int col, int value
+    @returns: void
+  */
+  _sa(row, col, value) {
+    if (row < 0 || row >= this.height) throw new Error('Row out of bounds');
+    if (col < 0 || col >= this.width) throw new Error('Column out of bounds');
+    this.data[row * 4 * this.width + 4 * col + 3] = value;
+  }
+
+  /**
+    @name: _sa
+    @description: set pixel alpha value at row column with logging
+    @params: int row, int col, int value
+    @returns: void
+  */
+  sa(row, col, value) {
+    this._log(`sa(${row}, ${col}, ${value})`);
+    this._s(row, col, value);
   }
 }

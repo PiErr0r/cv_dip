@@ -33,13 +33,15 @@ class Algo {
   mulAdd(contrast, brightness) {
     this._log(`mulAdd(${contrast}, ${brightness})`);
     this.checkImage();
+    const _c = typeof contrast === 'number' ? new Array(3).fill(contrast) : contrast
+    const _b = typeof brightness === 'number' ? new Array(3).fill(brightness) : brightness;
     for (let i = 0; i < this.image.height; ++i) {
       for (let j = 0; j < this.image.width; ++j) {
         if (this.image.grayscale) {
-          this.image._s(i, j, 0, this.image.g(i, j, 0) * contrast + brightness);
+          this.image._s(i, j, 0, this.image.g(i, j, 0) * _c[0] + _b[0]);
         } else {
           for (let k = 0; k < 3; ++k) {
-            this.image._s(i, j, k, this.image.g(i, j, k) * contrast + brightness);
+            this.image._s(i, j, k, this.image.g(i, j, k) * _c[k] + _b[k]);
           }
         }
       }
