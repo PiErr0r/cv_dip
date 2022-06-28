@@ -12,19 +12,38 @@ class Img {
 		this.loaded = false;
 
 		this.LOG = false;
+		// logger is here to document which commands were used to manipulate images
 		this.logger = new Logger();
 	}
 
+	/**
+		@name: logStart
+		@description: enable logging functionalities
+		@params: void
+		@returns: void
+		*/
 	logStart() {
 		this.LOG = true;
 		this.logger.new();
 	}
 
+	/**
+	@name: logEnd
+	@description: disable logging functionalities
+	@params: void
+	@returns: void
+	*/
 	logEnd() {
 		this.LOG = false;
 		this.logger.save();
 	}
 
+	/**
+		@name: logDl
+		@description: download current log
+		@params: void
+		@returns: void
+		*/
 	logDl() {
 		if (this.LOG) {
 			console.error("Logging still in progress. Call logEnd method to finish logging and download.");
@@ -32,12 +51,24 @@ class Img {
 		this.logger.downloadAll();
 	}
 
+	/**
+		@name: _log
+		@description: private function to log every method called on some instance of this class
+		@params: string data
+		@returns: void
+		*/
 	_log(data) {
 		if (this.LOG) {
 			this.logger.write(`_Img_.${data}`);
 		}
 	}
 
+	/**
+	@name: changeSrc
+	@description: change source url of internal image, this method is called when imgs picker value is changed
+	@params: OnChangeEvent evt
+	@returns: void
+	*/
 	changeSrc(evt) {
 		this.loaded = false;
 		const src = evt.target.value;
@@ -47,6 +78,12 @@ class Img {
 		img.src = `imgs/${src}`;
 	}
 
+	/**
+	@name: onImageLoad
+	@description: save image internally when it is loaded in the image-container
+	@params: OnLoadEvent evt
+	@returns: void
+	*/
 	onImageLoad(evt) {
 		this.deleteAll();
 		const image = evt.target;
@@ -59,6 +96,12 @@ class Img {
 		this.loaded = true;
 	}
 
+	/**
+		@name: new
+		@description: create new canvas view with specified dimensions, return id of newly created canvas
+		@params: int w, int h
+		@returns: string
+		*/
 	new(w = 0, h = 0) {
 		if (!this.loaded) throw new Error("Source not yet loaded!");
 		this._log(`new(${w}, ${h})`);
@@ -70,6 +113,12 @@ class Img {
 		return target.id;
 	}
 
+	/**
+	@name: delete
+	@description: delete canvas view by id, return true if canvas view with id exists, otherwise false
+	@params: string id
+	@returns: boolean
+	*/
 	delete(id) {
 		const canvas = document.getElementById(id);
 		if (!canvas) return false;
@@ -78,6 +127,12 @@ class Img {
 		return true
 	}
 
+	/**
+	@name: deleteAll
+	@description: delete all existing canvas views, returns true if all views were successfully deleted
+	@params: void
+	@returns: boolean
+	*/
 	deleteAll() {
 		this._log(`deleteAll()`);
 		const ids = this.getIds();
@@ -89,6 +144,12 @@ class Img {
 		return tmp;
 	}
 
+	/**
+	@name: getIds
+	@description: returns list of all canvas view ids
+	@params: void
+	@returns: string[]
+	*/
 	getIds() {
 		this._log(`getIds()`);
 		const ids = [];
@@ -100,6 +161,12 @@ class Img {
 		return ids;
 	}
 
+	/**
+	@name: disp
+	@description: display internal image data in specified canvas
+	@params: string id?, if id is null or undefined display the image in last canvas which was created
+	@returns: void
+	*/
 	disp(id) {
 		if (id === null || id === undefined) {
 			id = this.targetCnt - 1;				
