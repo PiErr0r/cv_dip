@@ -1,6 +1,6 @@
 
 // saved globally on purpose so you can make changes in the console and use it as REPL
-var algo = new Algo();
+var algo = new Algo([Histogram]);
 var img;
 
 function processImage(evt) {

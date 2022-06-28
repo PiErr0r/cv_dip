@@ -3,7 +3,15 @@
 class Algo {
   constructor(algorithms = []) {
     algorithms.forEach(alg => {
-      Object.assign(this, alg);
+      const newAlg = {};
+      Object.getOwnPropertyNames(alg.prototype).forEach(k => {
+        if (k === 'constructor') return;
+        newAlg[k] = (...args) => {
+          this._log(`${k}(${args})`);
+          alg.prototype[k](...args);
+        }
+      })
+      Object.assign(this, newAlg);
     })
   }
 
