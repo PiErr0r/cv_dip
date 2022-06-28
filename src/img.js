@@ -24,6 +24,9 @@ class Img {
 
 		// internal image data
 		this.image = null;
+
+		// algorithm wrapper
+		this.algo = new Algo(this.image, this._log.bind(this));
 	}
 
 	/**
@@ -102,7 +105,7 @@ class Img {
 		this.source.width = w;
 		this.source.height = h;
 		this.ctxSource.drawImage(image, 0, 0);
-		this.image = new ImgData(this.ctxSource.getImageData(0, 0, w, h));
+		this.image = new ImgData(this.ctxSource.getImageData(0, 0, w, h), this._log.bind(this));
 		this.loaded = true;
 	}
 

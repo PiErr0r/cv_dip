@@ -1,12 +1,18 @@
 
 
 class ImgData extends ImageData {
-  constructor(image) {
+  constructor(image, logFn) {
     this = {...this, ...image};
     this.grayscale = false;
+    this.logFn = logFn;
+  }
+
+  _log(data) {
+    this.logFn(`image.${data}`);
   }
 
   setGrayscale(isGrayscale, band) {
+    this._log(`setGrayscale(${isGrayscale}, ${band})`)
     this.grayscale = isGrayscale;
     if (isGrayscale) {
       if (band === null || band === undefined) {
@@ -18,7 +24,7 @@ class ImgData extends ImageData {
             }
             sum /= 3;
             for (let k = 0; k < 3; ++k) {
-              this.s(i, j, k, sum);
+              this.data[row * 4 * this.width + 4 * col + k] = sum;
             }
           }
         }
@@ -27,7 +33,7 @@ class ImgData extends ImageData {
         for (let i = 0; i < this.height; ++i) {
           for (let j = 0; j < this.width; ++j) {
             for (let k = 0; k < 3; ++k) {
-              this.s(i, j, k, this.g(i, j, _band));
+              this.data[row * 4 * this.width + 4 * col + k] = this.g(i, j, _band);
             }
           }
         }
@@ -69,13 +75,13 @@ class ImgData extends ImageData {
     if (row < 0 || row >= this.height) throw new Error('Row out of bounds');
     if (col < 0 || col >= this.width)  throw new Error('Column out of bounds');
     if (this.grayscale) {
-      return this.data[row * 4 * this.width + 4 * col];;
+      return this.data[row * 4 * this.width + 4 * col];
     }
     const _band = this.getBand(band);
     return this.data[row * 4 * this.width + 4 * col + _band];
   }
 
-  s(row, col, band, value) {
+  _s(row, col, band, value) {
     if (row < 0 || row >= this.height) throw new Error('Row out of bounds');
     if (col < 0 || col >= this.width) throw new Error('Column out of bounds');
     if (this.grayscale) {
@@ -86,5 +92,10 @@ class ImgData extends ImageData {
     }
     const _band = this.getBand(band);
     this.data[row * 4 * this.width + 4 * col + _band] = value;
+  }
+
+  s(row, col, band, value) {
+    this._log(`s(${row}, ${col}, ${band}, ${value})`);
+    this._s(row, col, band, value);
   }
 }
