@@ -199,13 +199,15 @@ class Img {
 		}
 		this._log(`disp(${id})`);
 		const canvas = document.getElementById(`target-${id}`);
+		canvas.width = this.imageCopy.width;
+		canvas.height = this.imageCopy.height;
 		if (!canvas) return false;
 		const ctx = canvas.getContext('2d');
 		const blank = new Image();
-		blank.width = this.size.w;
-		blank.height = this.size.h;
+		blank.width = this.imageCopy.width;
+		blank.height = this.imageCopy.height;
 		ctx.drawImage(blank, 0, 0);
-		if (original) {
+		if (original && false) { // disable functionality
 			ctx.putImageData(this.image, 0, 0);
 		} else {
 			ctx.putImageData(this.imageCopy, 0, 0);

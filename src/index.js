@@ -6,8 +6,19 @@ var img;
 function processImage(evt) {
 	img.logStart();
 	img.onImageLoad(evt);
-	img.new();
 	img.copy();
+	img.new();
+	// console.log(img.imageCopy, img.imageCopy.g(0, 199, 0), img.imageCopy.g(0, 199, 1), img.imageCopy.g(0, 199, 2), img.imageCopy.ga(0, 199))
+	img.imageCopy.setGrayscale(true);
+	img.imageCopy = img.imageCopy.rotateLeft();
+	// console.log(img.imageCopy)
+	img.disp();
+	img.new();
+	img.imageCopy = img.imageCopy.rotateRight();
+	console.log(img.imageCopy.grayscale)
+	img.disp();
+	img.new();
+	img.imageCopy = img.imageCopy.rotateLeft();
 	img.disp();
 	img.logEnd();
 }

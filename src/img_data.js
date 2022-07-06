@@ -137,7 +137,7 @@ class ImgData extends ImageData {
   ga(row, col) {
     if (row < 0 || row >= this.height) throw new Error('Row out of bounds');
     if (col < 0 || col >= this.width) throw new Error('Column out of bounds');
-    this.data[row * 4 * this.width + 4 * col + 3];
+    return this.data[row * 4 * this.width + 4 * col + 3];
   }
 
   /**
@@ -160,6 +160,48 @@ class ImgData extends ImageData {
   */
   sa(row, col, value) {
     this._log(`sa(${row}, ${col}, ${value})`);
-    this._s(row, col, value);
+    this._sa(row, col, value);
+  }
+
+  rotateLeft() {
+    this._log('rotateLeft()');
+    const h = this.width;
+    const w = this.height;
+    const img = new ImageData(w, h);
+    const tmp = new ImgData(img, this.logFn);
+    tmp.grayscale = this.grayscale;
+
+    for (let i = 0; i < this.height; ++i) {
+      for (let j = 0; j < this.width; ++j) {
+        const y = this.width - j - 1;
+        const x = i; 
+        for (let k = 0; k < 3; ++k) {
+          tmp._s(y, x, k, this.g(i, j, k));
+        }
+        tmp._sa(y, x, this.ga(i, j))
+      }
+    }
+    return tmp;
+  }
+
+  rotateRight() {
+    this._log('rotateRight()');
+    const h = this.width;
+    const w = this.height;
+    const img = new ImageData(w, h);
+    const tmp = new ImgData(img, this.logFn);
+    tmp.grayscale = this.grayscale;
+
+    for (let i = 0; i < this.height; ++i) {
+      for (let j = 0; j < this.width; ++j) {
+        const y = j;
+        const x = this.height - i - 1; 
+        for (let k = 0; k < 3; ++k) {
+          tmp._s(y, x, k, this.g(i, j, k));
+        }
+        tmp._sa(y, x, this.ga(i, j))
+      }
+    }
+    return tmp;
   }
 }
