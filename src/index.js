@@ -1,25 +1,24 @@
 
 // saved globally on purpose so you can make changes in the console and use it as REPL
-var algo = new Algo([Histogram]);
+var algo = new Algo([Histogram, Filter]);
 var img;
 
 function processImage(evt) {
 	img.logStart();
 	img.onImageLoad(evt);
 	img.copy();
-	img.new();
-	// console.log(img.imageCopy, img.imageCopy.g(0, 199, 0), img.imageCopy.g(0, 199, 1), img.imageCopy.g(0, 199, 2), img.imageCopy.ga(0, 199))
+	
 	img.imageCopy.setGrayscale(true);
-	img.imageCopy = img.imageCopy.rotateLeft();
-	// console.log(img.imageCopy)
-	img.disp();
 	img.new();
-	img.imageCopy = img.imageCopy.rotateRight();
-	console.log(img.imageCopy.grayscale)
+	const k1 = new Matrix([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]);
+	img.imageCopy = algo.conv(img.imageCopy, k1, true);
 	img.disp();
+
+	const k2 = new Matrix([[1, 1, 1], [0, 0, 0], [-1, -1, -1]]);
 	img.new();
-	img.imageCopy = img.imageCopy.rotateLeft();
+	img.imageCopy = algo.sobel(img.imageCopy, true, 128);
 	img.disp();
+
 	img.logEnd();
 }
 

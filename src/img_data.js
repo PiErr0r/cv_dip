@@ -1,7 +1,7 @@
 
 
 class ImgData extends ImageData {
-  constructor(image, logFn) {
+  constructor(image, logFn = () => {}) {
     super(image.data, image.width);
     this.grayscale = false;
     this.logFn = logFn;
@@ -85,12 +85,15 @@ class ImgData extends ImageData {
   /**
     @name: g
     @description: get pixel value at row column and band
-    @params: int row, int col, char|int band
+    @params: int row, int col, char|int band, int? outOfBandRetVal
     @returns: int
   */
-  g(row, col, band) {
-    if (row < 0 || row >= this.height) throw new Error('Row out of bounds');
-    if (col < 0 || col >= this.width)  throw new Error('Column out of bounds');
+  g(row, col, band, outOfBandRetVal = null) {
+    if (outOfBandRetVal === null && (row < 0 || row >= this.height)) throw new Error('Row out of bounds');
+    if (outOfBandRetVal === null && (col < 0 || col >= this.width))  throw new Error('Column out of bounds');
+    if (outOfBandRetVal !== null && (row < 0 || row >= this.height || col < 0 || col >= this.width)) {
+      return outOfBandRetVal;
+    }
     if (this.grayscale) {
       return this.data[row * 4 * this.width + 4 * col];
     }
