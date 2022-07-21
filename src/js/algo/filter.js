@@ -55,4 +55,27 @@ class Filter {
 		return nImg;
 	}
 
+	gauss(image, kernelSize, sigma) {
+		if (kernelSize % 2 === 1) {
+			throw new Error("kernelSize must be odd");
+		}
+		const k = this.getGaussKernel(kernelSize, sigma);
+		const G = _conv(image, k);
+		return _fillImage(G, false);
+	}
+
+	getGaussKernel(kernelSize, sigma) {
+		const kernel = new Matrix(kernelSize, kernelSize);
+		const mid = kernelSize >> 1;
+		const K = 1 / (2 * Math.PI * sigma * sigma);
+		for (let i = 0; i < kernelSize; ++i) {
+			for (let j = 0; j < kernelSize; ++j) {
+				const x = -mid + j;
+				const y = -mid + i;
+				const D = Math.exp(-(x + y)/(2 * sigma * sigma));
+				kernel[i][j] = K * D;
+			}
+		}
+		return kernel;
+	}
 }

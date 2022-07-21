@@ -10,11 +10,13 @@ function processImage(evt) {
 	
 	img.imageCopy.setGrayscale(true);
 	img.new();
-	const k1 = new Matrix([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]);
+	// const k1 = new Matrix([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]);
+	const k1 = new Matrix([[0, 0, 0], [0, 1, 0], [0, 0, 0]]);
 	img.imageCopy = algo.conv(img.imageCopy, k1, true);
 	img.disp();
 
 	const k2 = new Matrix([[1, 1, 1], [0, 0, 0], [-1, -1, -1]]);
+	// const k2 = new Matrix([[0, 0, 0], [0, 1, 0], [0, 0, 0]]);
 	img.new();
 	img.imageCopy = algo.sobel(img.imageCopy, true, 128);
 	img.disp();
@@ -29,7 +31,7 @@ function main() {
 		console.log("initialization", res);
 		const imgContainer = document.getElementById('image-container');
 		imgContainer.addEventListener("load", (evt) => processImage(evt));
-	})
+	});
 }
 
 window.onload = main;
