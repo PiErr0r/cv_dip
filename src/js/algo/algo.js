@@ -15,14 +15,8 @@ class Algo {
     })
   }
 
-  setLogFn(logFn) {
-    this.logFn = logFn;
-  }
-
   _log(data) {
-    if (this.logFn) {
-      this.logFn(`algo.${data}`);
-    }
+    logger.write(`algo.${data}`);
   }
 
   checkGreyscale(image, fnName) {
@@ -36,9 +30,10 @@ class Algo {
   gammaCorrection(image, gamma) {
     this._log(`gammaCorrection(image, ${gamma})`);
     if (!this.checkGreyscale(image, 'gammaCorrection')) return;
-    for (let i = 0; i < image.height; ++i) {
-      for (let j = 0; j < image.width; ++j) {
-        image._s(i, j, 0, image.g(i, j, 0) ** (1/gamma));
+    const [h, w] = image.dim();
+    for (let i = 0; i < h; ++i) {
+      for (let j = 0; j < w; ++j) {
+        image[0][i][j] = image[0][i][j] ** (1/gamma)
       }
     }
   }
@@ -47,14 +42,14 @@ class Algo {
     this._log(`mulAdd(image, ${contrast}, ${brightness})`);
     const _c = typeof contrast === 'number' ? new Array(3).fill(contrast) : contrast
     const _b = typeof brightness === 'number' ? new Array(3).fill(brightness) : brightness;
-    console.log(brightness)
+    
     for (let i = 0; i < image.height; ++i) {
       for (let j = 0; j < image.width; ++j) {
         if (image.grayscale) {
-          image._s(i, j, 0, image.g(i, j, 0) * _c[0] + _b[0]);
+          image[0][i][j] = image[0][i][j] * _c[0] + _b[0]
         } else {
           for (let k = 0; k < 3; ++k) {
-            image._s(i, j, k, image.g(i, j, k) * _c[k] + _b[k]);
+            image[k][i][j] = image[k][i][j] * _c[k] + _b[k]
           }
         }
       }
@@ -65,10 +60,11 @@ class Algo {
     this._log(`conv(image, kernel)`);
     if (!this.checkGreyscale(image, 'conv')) return;
 
-    let tmp = new ImageData(image.width, image.height);
-    const nImg = new ImgData(tmp);
+    const [h, w] = image.dim()
+    const nImg = new ImageMatrix(h, w, 'grayscale');
     nImg.setGrayscale(true);
-    tmp = _conv(image, kernel);
+    const tmp = _conv(image, kernel);
+
     if (normalize) {
       let min = Infinity, max = -Infinity;
       for (let i = 0; i < tmp.length; ++i) {
@@ -77,21 +73,16 @@ class Algo {
           max = Math.max(max, tmp[i][j]);
         }
       }
+      
       const diff = max - min;
-      for (let i = 0; i < tmp.length; ++i) {
-        for (let j = 0; j < tmp[0].length; ++j) {
+      for (let i = 0; i < h; ++i) {
+        for (let j = 0; j < w; ++j) {
           tmp[i][j] = (tmp[i][j] - min) * diff / 255;
         }
       }
     }
 
-    for (let i = 0; i < tmp.length; ++i) {
-      for (let j = 0; j < tmp[0].length; ++j) {
-        nImg._s(i, j, 0, tmp[i][j]);
-        nImg._sa(i, j, 255);
-      }
-    }
-
+    nImg[0] = tmp;
     return nImg;
   }
 }

@@ -1,30 +1,24 @@
 const _fillImage = (m, normalize = false) => {
-  let tmp = new ImageData(m[0].length, m.length);
-  const nImg = new ImgData(tmp);
-  nImg.setGrayscale(true);
-  
+  const nImg = new ImageMatrix(1, 1, 'grayscale');
+  const [h, w] = m.dim();
+
   if (normalize) {
     let min = Infinity, max = -Infinity;
-    for (let i = 0; i < m.length; ++i) {
-      for (let j = 0; j < m[0].length; ++j) {
+    for (let i = 0; i < h; ++i) {
+      for (let j = 0; j < w; ++j) {
         min = Math.min(min, m[i][j]);
         max = Math.max(max, m[i][j]);
       }
     }
+    
     const diff = max - min;
-    for (let i = 0; i < m.length; ++i) {
-      for (let j = 0; j < m[0].length; ++j) {
+    for (let i = 0; i < h; ++i) {
+      for (let j = 0; j < w; ++j) {
         m[i][j] = (m[i][j] - min) * 255 / diff;
       }
     }
   }
 
-  for (let i = 0; i < m.length; ++i) {
-    for (let j = 0; j < m[0].length; ++j) {
-      nImg._s(i, j, 0, m[i][j]);
-      nImg._sa(i, j, 255);
-    }
-  }
-
+  nImg[0] = m;
   return nImg;
 }

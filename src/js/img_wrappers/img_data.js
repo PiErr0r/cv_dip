@@ -1,14 +1,13 @@
 
 
 class ImgData extends ImageData {
-  constructor(image, logFn = () => {}) {
+  constructor(image) {
     super(image.data, image.width);
     this.grayscale = false;
-    this.logFn = logFn;
   }
 
   _log(data) {
-    this.logFn(`image.${data}`);
+    logger.write(`image.${data}`);
   }
 
   /**
@@ -46,6 +45,7 @@ class ImgData extends ImageData {
       }
     }
   }
+
   /**
     @name: getBand
     @description: get band integer value from char value
@@ -171,7 +171,7 @@ class ImgData extends ImageData {
     const h = this.width;
     const w = this.height;
     const img = new ImageData(w, h);
-    const tmp = new ImgData(img, this.logFn);
+    const tmp = new ImgData(img);
     tmp.grayscale = this.grayscale;
 
     for (let i = 0; i < this.height; ++i) {
@@ -192,7 +192,7 @@ class ImgData extends ImageData {
     const h = this.width;
     const w = this.height;
     const img = new ImageData(w, h);
-    const tmp = new ImgData(img, this.logFn);
+    const tmp = new ImgData(img);
     tmp.grayscale = this.grayscale;
 
     for (let i = 0; i < this.height; ++i) {

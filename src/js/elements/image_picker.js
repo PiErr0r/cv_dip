@@ -11,14 +11,15 @@ function createOption(filename) {
 
 function initImagePicker(handleChange) {
 	const picker = document.getElementById("image-picker");
-	return fetch("imgs/index.txt").then(r => r.text()).then(resp => {
-		const imgs = resp.split("\n");
-		imgs.forEach(img => {
-			const option = createOption(img);
-			if (option !== null)
-				picker.appendChild(option);
+	return fetch("imgs/index.txt", { cache: "no-store" })
+		.then(r => r.text()).then(resp => {
+			const imgs = resp.split("\n");
+			imgs.forEach(img => {
+				const option = createOption(img);
+				if (option !== null)
+					picker.appendChild(option);
+			});
+			picker.addEventListener('change', (evt) => handleChange(evt));
+			return "Done";
 		});
-		picker.addEventListener('change', (evt) => handleChange(evt));
-		return "Done";
-	});
 }

@@ -9,8 +9,6 @@ class Img {
 		// source canvas view context
 		this.ctxSource = this.source.getContext('2d');
 
-		// canvas view size
-		this.size = null;
 		// counts number of canvas views
 		this.targetCnt = 0;
 
@@ -19,8 +17,6 @@ class Img {
 
 		// enable loggings
 		this.LOG = false;
-		// logger is here to document which commands were used to manipulate images
-		this.logger = new Logger();
 
 		// internal image data
 		this.image = null;
@@ -38,7 +34,7 @@ class Img {
 		*/
 	logStart() {
 		this.LOG = true;
-		this.logger.new();
+		logger.new();
 	}
 
 	/**
@@ -49,7 +45,7 @@ class Img {
 	*/
 	logEnd() {
 		this.LOG = false;
-		this.logger.save();
+		logger.save();
 	}
 
 	/**
@@ -62,7 +58,7 @@ class Img {
 		if (this.LOG) {
 			console.error("Logging still in progress. Call logEnd method to finish logging and download.");
 		}
-		this.logger.downloadAll();
+		logger.downloadAll();
 	}
 
 	/**
@@ -73,7 +69,7 @@ class Img {
 		*/
 	_log(data) {
 		if (this.LOG) {
-			this.logger.write(`_Img_.${data}`);
+			logger.write(`_Img_.${data}`);
 		}
 	}
 
@@ -102,11 +98,11 @@ class Img {
 		this.deleteAll();
 		const image = evt.target;
 		const w = image.width, h = image.height;
-		this.size = { w, h };
 		this.source.width = w;
 		this.source.height = h;
 		this.ctxSource.drawImage(image, 0, 0);
-		this.image = new ImgData(this.ctxSource.getImageData(0, 0, w, h), this._log.bind(this));
+		// this.image = new ImgData(this.ctxSource.getImageData(0, 0, w, h));
+		this.image = new ImageMatrix(new ImgData(this.ctxSource.getImageData(0, 0, w, h)));
 		this.loaded = true;
 	}
 
@@ -117,9 +113,9 @@ class Img {
 		@returns: void
 		*/
 	copy() {
-		const w = this.image.width;
-		const h = this.image.height;
-		this.imageCopy = new ImgData(this.ctxSource.getImageData(0, 0, w, h), this._log.bind(this));
+		const [h, w] = this.image.dim();
+		// this.imageCopy = new ImgData(this.ctxSource.getImageData(0, 0, w, h));
+		this.imageCopy = new ImageMatrix(new ImgData(this.ctxSource.getImageData(0, 0, w, h)));
 	}
 
 	/**
@@ -132,8 +128,9 @@ class Img {
 		if (!this.loaded) throw new Error("Source not yet loaded!");
 		this._log(`new(${w}, ${h})`);
 		const target = document.createElement('canvas');
-		target.width = w || this.size.w;
-		target.height = h || this.size.h;
+		const [_h, _w] = this.image.dim();
+		target.width = w || _w;
+		target.height = h || _h;
 		target.id = `target-${this.targetCnt++}`;
 		this._wrapper.appendChild(target);
 		return target.id;
@@ -188,6 +185,73 @@ class Img {
 	}
 
 	/**
+		@name: matrixToImageData
+		@description: creates ImageData class which can be written to canvas from matrix
+		@params: ImageMatrix|ImageBinaryMatrix m
+		@returns: ImageData
+	  */
+	matrixToImageData(m) {
+		const [h, w] = m.dim();
+		const img = new ImgData(new ImageData(w, h));
+		for (let i = 0; i < h; ++i) {
+			for (let j = 0; j < w; ++j) {
+				if (m instanceof ImageBinaryMatrix) {
+					for (k = 0; k < 3; ++k) {
+						img._s(i, j, k, m[i][j] && 255);
+					}
+					img._sa(i, j, 255);
+				} else { // ImageMatrix
+					if (m.grayscale) {
+						for (let k = 0; k < 3; ++k) {
+							img._s(i, j, k, m[0][i][j]);
+						}
+						img._sa(i, j, 255);
+					} else { // not grayscale
+						for (let k = 0; k < 3; ++k) {
+							img._s(i, j, k, m[k][i][j]);
+						}
+						img._sa(i, j, 255);
+					}
+				}
+			}
+		}
+		return img;
+	}
+
+	/**
+		@name: imageDataToMatrix
+		@description: create ImageMatrix or ImageBinaryMatrix from ImageData
+		@params: ImageData|ImgData img, boolean? binary, int? threshold
+		@returns: ImageMatrix|ImageBinaryMatrix
+	  */
+	imageDataToMatrix(img, binary = false, threshold = 0) {
+		const [h, w] = [img.height, img.width];
+		
+		const m = binary
+			? new ImageBinaryMatrix(h, w)
+			: new ImageMatrix(h, w, img.grayscale ? 'grayscale' : 'rgb');
+
+		for (let i = 0; i < h; ++i) {
+			for (let j = 0; j < w; ++j) {
+				if (binary) {
+					let data = 0;
+					for (let k = 0; k < 3; ++k) {
+						data += img.g(i, j, k);
+					}
+					m[i][j] = (data / 3) > threshold ? 1 : 0;
+				} else if (img.grayscale) {
+					m[0][i][j] = img.g(i, j);
+				} else { // rgb
+					for (let k = 0; k < 3; ++k) {
+						m[k][i][j] = img.g(i, j, k);
+					}
+				}
+			}
+		}
+		return m;
+	}
+
+	/**
 		@name: disp
 		@description: display internal image data in specified canvas, allowed to display copy of image data
 		@params: int id?, boolean original?, if id is null or undefined display the image in last canvas which was created
@@ -199,18 +263,19 @@ class Img {
 		}
 		this._log(`disp(${id})`);
 		const canvas = document.getElementById(`target-${id}`);
-		canvas.width = this.imageCopy.width;
-		canvas.height = this.imageCopy.height;
+		const [h, w] = this.imageCopy.dim();
+		canvas.width = w;
+		canvas.height = h;
 		if (!canvas) return false;
 		const ctx = canvas.getContext('2d');
 		const blank = new Image();
-		blank.width = this.imageCopy.width;
-		blank.height = this.imageCopy.height;
+		blank.width = w;
+		blank.height = h;
 		ctx.drawImage(blank, 0, 0);
 		if (original && false) { // disable functionality
-			ctx.putImageData(this.image, 0, 0);
+			ctx.putImageData(this.matrixToImageData(this.image), 0, 0);
 		} else {
-			ctx.putImageData(this.imageCopy, 0, 0);
+			ctx.putImageData(this.matrixToImageData(this.imageCopy), 0, 0);
 		}
 	}
 }
