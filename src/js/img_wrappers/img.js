@@ -101,7 +101,7 @@ class Img {
 		this.source.width = w;
 		this.source.height = h;
 		this.ctxSource.drawImage(image, 0, 0);
-		// this.image = new ImgData(this.ctxSource.getImageData(0, 0, w, h));
+
 		this.image = new ImageMatrix(new ImgData(this.ctxSource.getImageData(0, 0, w, h)));
 		this.loaded = true;
 	}
@@ -112,10 +112,12 @@ class Img {
 		@params: void
 		@returns: void
 		*/
-	copy() {
+	copy(band) {
 		const [h, w] = this.image.dim();
 		// this.imageCopy = new ImgData(this.ctxSource.getImageData(0, 0, w, h));
 		this.imageCopy = new ImageMatrix(new ImgData(this.ctxSource.getImageData(0, 0, w, h)));
+		if (this.image.grayscale)
+			this.imageCopy.setGrayscale(true, band);
 	}
 
 	/**
@@ -196,7 +198,7 @@ class Img {
 		for (let i = 0; i < h; ++i) {
 			for (let j = 0; j < w; ++j) {
 				if (m instanceof ImageBinaryMatrix) {
-					for (k = 0; k < 3; ++k) {
+					for (let k = 0; k < 3; ++k) {
 						img._s(i, j, k, m[i][j] && 255);
 					}
 					img._sa(i, j, 255);
@@ -210,7 +212,7 @@ class Img {
 						for (let k = 0; k < 3; ++k) {
 							img._s(i, j, k, m[k][i][j]);
 						}
-						img._sa(i, j, 255);
+						img._sa(i, j, m[3][i][j]);
 					}
 				}
 			}

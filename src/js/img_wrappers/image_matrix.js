@@ -48,7 +48,6 @@ class ImageMatrix extends Array {
 						this[0][i][j] /= 3
 					}
 				}
-				return this[0];
 			}
 		}
 	}
@@ -73,15 +72,16 @@ class ImageMatrix extends Array {
         case 'r':
         case 'R':
           return 0;
-          break;
         case 'g':
         case 'G':
           return 1;
-          break;
         case 'b':
         case 'B':
           return 2;
-          break;
+        case 'a':
+        case 'A':
+        case 'alpha':
+	        return 3;
         default:
           throw new Error(`Unrecognized band passed: ${band}`);
           break;
@@ -89,7 +89,7 @@ class ImageMatrix extends Array {
     } else if (typeof band !== 'number') {
       throw new Error(`Unrecognized band passed: ${band}`);
     } else {
-      if (band !== 0 && band !== 1 && band !== 2) {
+      if (band !== 0 && band !== 1 && band !== 2 && band !== 3) {
         throw new Error(`Unrecognized band passed: ${band}`);
       } else {
         return band;
@@ -103,7 +103,7 @@ class ImageMatrix extends Array {
     @params: boolean isGrayscale, int|char band
     @returns: void
   */
-  setGrayscale(isGrayscale, band) {
+  setGrayscale(isGrayscale = true, band) {
     this._log(`setGrayscale(${isGrayscale}, ${band})`)
     const [h, w] = this.dim();
     if (isGrayscale) {
@@ -112,7 +112,7 @@ class ImageMatrix extends Array {
           for (let j = 0; j < w; ++j) {
             let sum = this[0][i][j];
             let l = 1;
-            for (let k = 1; k < 3 && !this.grayscale; ++k) {
+            for (let k = 1; k < 3 && !this.grayscale && this[3][i][j]; ++k) {
               sum += this[k][i][j];
               ++l;
             }

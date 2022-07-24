@@ -39,13 +39,13 @@ function processImage(evt) {
 	img.new();
 	img.copy('alpha');
 	img.imageCopy = new ImageBinaryMatrix(img.imageCopy);
-	img.imageCopy = algo.open(img.imageCopy, 5);
+	img.imageCopy = algo.open(img.imageCopy, 11);
 	img.disp();
 
 	img.new();
 	img.copy('alpha');
 	img.imageCopy = new ImageBinaryMatrix(img.imageCopy);
-	img.imageCopy = algo.close(img.imageCopy, 5);
+	img.imageCopy = algo.close(img.imageCopy, 11);
 	img.disp();
 
 	img.logEnd();

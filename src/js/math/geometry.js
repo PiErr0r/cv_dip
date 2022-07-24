@@ -13,9 +13,9 @@ function isPointOnLineSegment(pt, ls) {
 
 	// check if pt C is on the line made by A and B
 	const isAligned = ab.cross(ac).reduce((acc, curr) => acc && Math.abs(curr) < EPSILON, true);
-	console.log("#",isAligned, ab.cross(ac))
-	console.log(a, b, c)
-	console.log(ab, ac)
+	// console.log("#",isAligned, ab.cross(ac))
+	// console.log(a, b, c)
+	// console.log(ab, ac)
 	if (!isAligned) return false;
 
 	// check if C is between points A and B
