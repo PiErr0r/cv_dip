@@ -4,6 +4,7 @@ var algo = new Algo([
 	Histogram, 
 	Filter, 
 	Morphology,
+	DistanceTransform,
 ]);
 var logger = new Logger();
 var img;
@@ -16,36 +17,6 @@ function processImage(evt) {
 	img.new();
 	img.copy('alpha');
 	img.imageCopy = new ImageBinaryMatrix(img.imageCopy);
-	img.disp();
-
-	img.new();
-	img.copy('alpha');
-	img.imageCopy = new ImageBinaryMatrix(img.imageCopy);
-	img.imageCopy = algo.dilate(img.imageCopy, 11);
-	img.disp();
-
-	img.new();
-	img.copy('alpha');
-	img.imageCopy = new ImageBinaryMatrix(img.imageCopy);
-	img.imageCopy = algo.erode(img.imageCopy, 11);
-	img.disp();
-
-	img.new();
-	img.copy('alpha');
-	img.imageCopy = new ImageBinaryMatrix(img.imageCopy);
-	img.imageCopy = algo.majority(img.imageCopy, 11);
-	img.disp();
-
-	img.new();
-	img.copy('alpha');
-	img.imageCopy = new ImageBinaryMatrix(img.imageCopy);
-	img.imageCopy = algo.open(img.imageCopy, 5);
-	img.disp();
-
-	img.new();
-	img.copy('alpha');
-	img.imageCopy = new ImageBinaryMatrix(img.imageCopy);
-	img.imageCopy = algo.close(img.imageCopy, 5);
 	img.disp();
 
 	img.logEnd();
