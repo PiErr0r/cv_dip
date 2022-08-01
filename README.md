@@ -10,9 +10,7 @@ to start the app at this time use `python3 -m http.server` and open the app in b
 
 ## TODO
 
-- matrix wrapper for image data
-  - this requires some refactoring but it will be easier to create binary image and such
-  - use image data exclusively for displaying the image
+- 2D FFT: compute fft for each line and then of each resulting column
 - wrapper for multiple images, similar to one which displays them
   - currently have imageCopy as workspace and image as original
 - use DevTools as REPL to interact with image in real time
