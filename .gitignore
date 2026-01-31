@@ -1,4 +1,5 @@
-literature/*
-src/imgs/*
-src/Functions_for_feature_extraction/*
-hw/*
+literature/
+data/
+src/imgs/
+src/Functions_for_feature_extraction/
+hw/
